@@ -4,9 +4,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import static com.overclockers.fetcher.ForumConstants.MAIN_URL;
-import static com.overclockers.fetcher.ForumConstants.TOPIC_URL;
-import static com.overclockers.fetcher.ForumConstants.USER_PROFILE_URL;
+import static com.overclockers.fetcher.constants.ForumConstants.*;
 
 @Component
 public class ElementParserImpl implements ElementParser {
@@ -43,46 +41,46 @@ public class ElementParserImpl implements ElementParser {
 
     @Override
     public String getTopicTitle(Element element) {
-        Elements topicElements = element.getElementsByAttributeValue("class", "topictitle");
+        Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         return removeCityFromTopic(topicElements.text());
     }
 
     @Override
     public String getTopicCity(Element element) {
-        Elements topicElements = element.getElementsByAttributeValue("class", "topictitle");
+        Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         return getCityFromTopic(topicElements.text());
     }
 
     @Override
     public String getTopicId(Element element) {
-        Elements topicElements = element.getElementsByAttributeValue("class", "topictitle");
+        Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         String topicHref = topicElements.select("a").attr("href");
         return getTopicId(topicHref);
     }
 
     @Override
     public String getTopicLink(Element element) {
-        Elements topicElements = element.getElementsByAttributeValue("class", "topictitle");
+        Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         String topicHref = topicElements.select("a").attr("href");
         return getTopicLink(topicHref);
     }
 
     @Override
     public String getAuthorUsername(Element element) {
-        Elements authorElements = element.getElementsByAttributeValue("class", "author");
+        Elements authorElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
         return authorElements.select("a").text();
     }
 
     @Override
     public String getAuthorProfileId(Element element) {
-        Elements authorElements = element.getElementsByAttributeValue("class", "author");
+        Elements authorElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
         String profileHref = authorElements.select("a").attr("href");
         return getUserProfileId(profileHref);
     }
 
     @Override
     public String getAuthorProfileLink(Element element) {
-        Elements authorElements = element.getElementsByAttributeValue("class", "author");
+        Elements authorElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
         String profileHref = authorElements.select("a").attr("href");
         return getUserProfileLink(profileHref);
     }

@@ -1,11 +1,17 @@
 package com.overclockers.fetcher.service;
 
+import com.overclockers.fetcher.HibernateUtil;
 import com.overclockers.fetcher.configuration.AppConfig;
+import com.overclockers.fetcher.model.User;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -17,7 +23,30 @@ public class FetchingServiceTest {
     FetchingService fetchingService;
 
     @Test
-    public void testPrintFirstPage() throws IOException {
-        fetchingService.printFirstPage();
+    public void testSaveFirstPage() throws IOException {
+        fetchingService.saveFirstPage();
+    }
+
+    @Test
+    public void testConnectionDB() {
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
+
+        User userToSave = User.builder().username("TestUsername").profileLink("TestProfileLink").build();
+        session.save(userToSave);
+        transaction.commit();
+
+        transaction = session.beginTransaction();
+        User savedUser = session.get(User.class, userToSave.getUserId());
+
+        assertEquals(savedUser, userToSave);
+
+        session.delete(userToSave);
+        transaction.commit();
+
+        User userAfterDeleting = session.get(User.class, userToSave.getUserId());
+        assertNull(userAfterDeleting);
+
+        HibernateUtil.closeSession();
     }
 }
