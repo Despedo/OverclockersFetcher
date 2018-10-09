@@ -19,7 +19,8 @@ import javax.persistence.Query;
 import java.io.IOException;
 import java.util.List;
 
-import static com.overclockers.fetcher.constants.ForumConstants.*;
+import static com.overclockers.fetcher.constants.ForumConstants.ELEMENT_CLASS_KEY;
+import static com.overclockers.fetcher.constants.ForumConstants.ELEMENT_TOPIC_VALUE;
 
 @Slf4j
 @Service
@@ -27,15 +28,38 @@ public class FetchingService {
 
     private static final String DB_MULTIPLE_TOPICS_ERROR = "DB contains more that one topic with the same title";
     private static final String DB_MULTIPLE_USERS_ERROR = "DB contains more that one user with the same username";
+    private static final String URL_CONNECTING_ERROR = "Error connecting to the URL";
 
-    @Value("${marketplace.url}")
-    private String marketplaceUrl;
+    @Value("${first.page.url}")
+    private String firstPageUrl;
+    @Value("${pages.fetching.size:10}")
+    private int pagesFetchingSize;
 
     @Autowired
     ElementParserImpl elementParser;
 
-    public void saveFirstPage() throws IOException {
-        Document doc = Jsoup.connect(marketplaceUrl).get();
+    public void saveTopics() {
+        int nextPage = 0;
+        for (int i = 0; i < pagesFetchingSize; i++) {
+            if (i == 0) {
+                savePage(firstPageUrl);
+            } else {
+                int nextPageShift = 40;
+                nextPage += nextPageShift;
+                String nextPageUrl = firstPageUrl + "&start=" + nextPage;
+                savePage(nextPageUrl);
+            }
+        }
+    }
+
+    private void savePage(String url) {
+        Document doc;
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            log.error(URL_CONNECTING_ERROR + " {}:", url);
+            throw new IllegalArgumentException(URL_CONNECTING_ERROR);
+        }
         Elements elements = doc.getElementsByAttributeValueMatching(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_VALUE);
 
         Session session = HibernateUtil.getSession();

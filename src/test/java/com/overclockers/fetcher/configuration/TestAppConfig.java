@@ -8,8 +8,8 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @ComponentScan({"com.overclockers.fetcher"})
-@PropertySource("classpath:/forum.properties")
-public class AppConfig {
+@PropertySource("classpath:/testForum.properties")
+public class TestAppConfig {
 
     @Bean
     public FetchingService fetchingService(){

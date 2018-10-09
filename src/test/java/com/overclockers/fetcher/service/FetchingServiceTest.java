@@ -1,9 +1,9 @@
 package com.overclockers.fetcher.service;
 
+import com.overclockers.fetcher.Application;
 import com.overclockers.fetcher.HibernateUtil;
-import com.overclockers.fetcher.configuration.AppConfig;
+import com.overclockers.fetcher.configuration.TestAppConfig;
 import com.overclockers.fetcher.model.User;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Test;
@@ -11,21 +11,16 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import static org.junit.Assert.*;
 
-import java.io.IOException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = AppConfig.class)
+@ContextConfiguration(classes = TestAppConfig.class)
 public class FetchingServiceTest {
 
     @Autowired
     FetchingService fetchingService;
-
-    @Test
-    public void testSaveFirstPage() throws IOException {
-        fetchingService.saveFirstPage();
-    }
 
     @Test
     public void testConnectionDB() {
