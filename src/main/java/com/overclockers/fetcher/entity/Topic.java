@@ -22,12 +22,12 @@ public class Topic {
     @JoinColumn(name = "topicStarterId", nullable = false)
     @ManyToOne(targetEntity = User.class)
     private User topicStarter;
-    @Column(name = "city")
-    private String city;
+    @Column(name = "location")
+    private String location;
     @Column(name = "title")
     private String title;
-    @Column(name = "topicLink")
-    private String topicLink;
+    @Column(name = "topicForumId")
+    private String topicForumId;
     @Column(name = "createdDateTime")
     private LocalDateTime createdDateTime;
     @Column(name = "lastMessageDateTime")

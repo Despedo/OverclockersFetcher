@@ -22,8 +22,8 @@ public class User {
     private Long userId;
     @Column(name = "userName")
     private String username;
-    @Column(name = "profileLink")
-    private String profileLink;
+    @Column(name = "profileForumId")
+    private String profileForumId;
     @Column(name = "createdDateTime")
     private LocalDateTime createdDateTime;
     @JoinColumn(name = "topicId")

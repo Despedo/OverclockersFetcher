@@ -7,9 +7,9 @@ import java.time.LocalDateTime;
 public interface ElementParser {
     String getTopicTitle(Element element);
 
-    String getTopicCity(Element element);
+    String getTopicLocation(Element element);
 
-    String getTopicId(Element element);
+    String getTopicForumId(Element element);
 
     String getTopicLink(Element element);
 
@@ -17,7 +17,7 @@ public interface ElementParser {
 
     String getAuthorUsername(Element element);
 
-    String getAuthorProfileId(Element element);
+    String getAuthorProfileForumId(Element element);
 
     String getAuthorProfileLink(Element element);
 }

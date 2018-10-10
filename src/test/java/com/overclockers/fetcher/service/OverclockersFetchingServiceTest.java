@@ -26,7 +26,7 @@ public class OverclockersFetchingServiceTest {
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
 
-        User userToSave = User.builder().username("TestUsername").profileLink("TestProfileLink").build();
+        User userToSave = User.builder().username("TestUsername").profileForumId("85462").build();
         session.save(userToSave);
         transaction.commit();
 

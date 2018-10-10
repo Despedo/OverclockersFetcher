@@ -20,7 +20,7 @@ public class OverclockersElementParser implements ElementParser {
     private static final String A_TAG = "a";
     private static final String HREF_ATTRIBUTE = "href";
 
-    private String getCityFromTopic(String topic) {
+    private String getLocationFromTopic(String topic) {
         int start = topic.indexOf('[') + 1;
         int end = topic.indexOf(']');
         return topic.substring(start, end);
@@ -30,24 +30,24 @@ public class OverclockersElementParser implements ElementParser {
         return topic.substring(topic.indexOf(']') + 2);
     }
 
-    private String getUserProfileId(String href) {
+    private String getUserProfileForumId(String href) {
         int start = href.indexOf(USER_PROFILE_DELIMITER) + USER_PROFILE_DELIMITER.length();
         int end = href.indexOf(SID_DELIMITER);
         return href.substring(start, end);
     }
 
     private String getUserProfileLink(String href) {
-        return HOST_URL + USER_PROFILE_PATH + getUserProfileId(href);
+        return HOST_URL + USER_PROFILE_PATH + getUserProfileForumId(href);
     }
 
-    private String getTopicId(String href) {
+    private String getTopicForumId(String href) {
         int start = href.indexOf(TOPIC_DELIMITER) + TOPIC_DELIMITER.length();
         int end = href.indexOf(SID_DELIMITER);
         return href.substring(start, end);
     }
 
     private String getTopicLink(String href) {
-        return HOST_URL + TOPIC_PATH + getTopicId(href);
+        return HOST_URL + TOPIC_PATH + getTopicForumId(href);
     }
 
     @Override
@@ -57,16 +57,16 @@ public class OverclockersElementParser implements ElementParser {
     }
 
     @Override
-    public String getTopicCity(Element element) {
+    public String getTopicLocation(Element element) {
         Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
-        return getCityFromTopic(topicElements.text());
+        return getLocationFromTopic(topicElements.text());
     }
 
     @Override
-    public String getTopicId(Element element) {
+    public String getTopicForumId(Element element) {
         Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         String topicHref = topicElements.select(A_TAG).attr(HREF_ATTRIBUTE);
-        return getTopicId(topicHref);
+        return getTopicForumId(topicHref);
     }
 
     @Override
@@ -106,10 +106,10 @@ public class OverclockersElementParser implements ElementParser {
     }
 
     @Override
-    public String getAuthorProfileId(Element element) {
+    public String getAuthorProfileForumId(Element element) {
         Elements authorElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
         String profileHref = authorElements.select(A_TAG).attr(HREF_ATTRIBUTE);
-        return getUserProfileId(profileHref);
+        return getUserProfileForumId(profileHref);
     }
 
     @Override

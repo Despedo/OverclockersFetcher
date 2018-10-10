@@ -87,7 +87,7 @@ public class OverclockersFetchingService implements FetchingService {
     }
 
     private Topic checkAndSaveTopic(Session session, Topic topic) {
-        Topic existingTopic = getTopicByTopicLink(session, topic.getTopicLink());
+        Topic existingTopic = getTopicByTopicForumId(session, topic.getTopicForumId());
         if (existingTopic != null) {
             topic = existingTopic;
         } else {
@@ -97,7 +97,7 @@ public class OverclockersFetchingService implements FetchingService {
     }
 
     private User checkAndSaveUser(Session session, User user) {
-        User existingUser = getUserByProfileLink(session, user.getProfileLink());
+        User existingUser = getUserByProfileForumId(session, user.getProfileForumId());
         if (existingUser != null) {
             user = existingUser;
         } else {
@@ -107,15 +107,15 @@ public class OverclockersFetchingService implements FetchingService {
     }
 
     private Topic getTopicFromElement(Element element) {
-        String topicCity = elementParser.getTopicCity(element);
+        String topicLocation = elementParser.getTopicLocation(element);
         String topicTitle = elementParser.getTopicTitle(element);
-        String topicLink = elementParser.getTopicLink(element);
+        String topicForumId = elementParser.getTopicForumId(element);
         LocalDateTime createdDateTime = LocalDateTime.now();
         LocalDateTime lastMessageDateTime = elementParser.getLastMessageDateTime(element);
         return Topic.builder()
-                .city(topicCity)
+                .location(topicLocation)
                 .title(topicTitle)
-                .topicLink(topicLink)
+                .topicForumId(topicForumId)
                 .createdDateTime(createdDateTime)
                 .lastMessageDateTime(lastMessageDateTime)
                 .build();
@@ -123,19 +123,19 @@ public class OverclockersFetchingService implements FetchingService {
 
     private User getUserFromElement(Element element) {
         String authorUsername = elementParser.getAuthorUsername(element);
-        String authorProfileLink = elementParser.getAuthorProfileLink(element);
+        String authorProfileForumId = elementParser.getAuthorProfileForumId(element);
         LocalDateTime createdDateTime = LocalDateTime.now();
 
         return User.builder()
                 .username(authorUsername)
-                .profileLink(authorProfileLink)
+                .profileForumId(authorProfileForumId)
                 .createdDateTime(createdDateTime)
                 .build();
     }
 
-    private User getUserByProfileLink(Session session, String profileLink) {
-        Query query = session.createQuery("FROM User u WHERE u.profileLink = :profileLink");
-        query.setParameter("profileLink", profileLink);
+    private User getUserByProfileForumId(Session session, String profileForumId) {
+        Query query = session.createQuery("FROM User u WHERE u.profileForumId = :profileForumId");
+        query.setParameter("profileForumId", profileForumId);
         List list = query.getResultList();
         if (list.size() > 1) {
             log.error(DB_MULTIPLE_USERS_ERROR);
@@ -144,9 +144,9 @@ public class OverclockersFetchingService implements FetchingService {
         return list.isEmpty() ? null : (User) list.get(0);
     }
 
-    private Topic getTopicByTopicLink(Session session, String topicLink) {
-        Query query = session.createQuery("FROM Topic t WHERE t.topicLink = :topicLink");
-        query.setParameter("topicLink", topicLink);
+    private Topic getTopicByTopicForumId(Session session, String topicForumId) {
+        Query query = session.createQuery("FROM Topic t WHERE t.topicForumId = :topicForumId");
+        query.setParameter("topicForumId", topicForumId);
         List list = query.getResultList();
         if (list.size() > 1) {
             log.error(DB_MULTIPLE_TOPICS_ERROR);
