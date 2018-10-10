@@ -1,9 +1,8 @@
 package com.overclockers.fetcher.service;
 
-import com.overclockers.fetcher.Application;
 import com.overclockers.fetcher.HibernateUtil;
 import com.overclockers.fetcher.configuration.TestAppConfig;
-import com.overclockers.fetcher.model.User;
+import com.overclockers.fetcher.entity.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.junit.Test;
@@ -17,10 +16,10 @@ import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestAppConfig.class)
-public class FetchingServiceTest {
+public class OverclockersFetchingServiceTest {
 
     @Autowired
-    FetchingService fetchingService;
+    OverclockersFetchingService overclockersFetchingService;
 
     @Test
     public void testConnectionDB() {

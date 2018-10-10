@@ -23,7 +23,7 @@
         </property>
 
         <!-- Mapping With Model Class Containing Annotations -->
-        <mapping class="com.overclockers.fetcher.model.Topic"/>
-        <mapping class="com.overclockers.fetcher.model.User"/>
+        <mapping class="com.overclockers.fetcher.entity.Topic"/>
+        <mapping class="com.overclockers.fetcher.entity.User"/>
     </session-factory>
 </hibernate-configuration>

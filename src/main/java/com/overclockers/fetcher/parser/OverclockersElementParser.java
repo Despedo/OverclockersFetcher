@@ -2,24 +2,18 @@ package com.overclockers.fetcher.parser;
 
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import static com.overclockers.fetcher.constants.ForumConstants.*;
+import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
 @Component
-public class ElementParserImpl implements ElementParser {
+public class OverclockersElementParser implements ElementParser {
 
     private static final String USER_PROFILE_DELIMITER = "&u=";
     private static final String TOPIC_DELIMITER = "&t=";
     private static final String SID_DELIMITER = "&sid=";
     private static final String A_TAG = "a";
     private static final String HREF_ATTRIBUTE = "href";
-
-    @Value("${user.profile.url}")
-    private String userProfileUrl;
-    @Value("${topic.url}")
-    private String topicUrl;
 
     private String getCityFromTopic(String topic) {
         int start = topic.indexOf('[') + 1;
@@ -38,7 +32,7 @@ public class ElementParserImpl implements ElementParser {
     }
 
     private String getUserProfileLink(String href) {
-        return userProfileUrl + getUserProfileId(href);
+        return HOST_URL + USER_PROFILE_PATH + getUserProfileId(href);
     }
 
     private String getTopicId(String href) {
@@ -48,7 +42,7 @@ public class ElementParserImpl implements ElementParser {
     }
 
     private String getTopicLink(String href) {
-        return topicUrl + getTopicId(href);
+        return HOST_URL + TOPIC_PATH + getTopicId(href);
     }
 
     @Override

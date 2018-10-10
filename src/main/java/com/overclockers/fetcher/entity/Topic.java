@@ -1,4 +1,4 @@
-package com.overclockers.fetcher.model;
+package com.overclockers.fetcher.entity;
 
 import lombok.*;
 

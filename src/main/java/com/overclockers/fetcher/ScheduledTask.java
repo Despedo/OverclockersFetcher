@@ -1,6 +1,6 @@
 package com.overclockers.fetcher;
 
-import com.overclockers.fetcher.service.FetchingService;
+import com.overclockers.fetcher.service.OverclockersFetchingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,12 +13,13 @@ import java.time.LocalDateTime;
 public class ScheduledTask {
 
     @Autowired
-    FetchingService fetchingService;
+    OverclockersFetchingService overclockersFetchingService;
 
-    @Scheduled(fixedRateString = "${fixed.Rate:20000}")
+    // By the default the top of every hour of every day.
+    @Scheduled(cron = "${cron.exp:0 0 * * * *}")
     public void fetchTopics() {
         log.info("Start saving topics, {}", LocalDateTime.now());
-        fetchingService.saveTopics();
+        overclockersFetchingService.saveTopics();
     }
 
 }
