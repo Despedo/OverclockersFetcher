@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.Query;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.overclockers.fetcher.constants.OverclockersConstants.*;
@@ -70,7 +71,7 @@ public class OverclockersFetchingService implements FetchingService {
         try {
             doc = Jsoup.connect(url).get();
         } catch (IOException e) {
-            log.error(URL_CONNECTING_ERROR + " {}:", url);
+            log.error(URL_CONNECTING_ERROR + ": {}", url);
             throw new IllegalArgumentException(URL_CONNECTING_ERROR);
         }
         return doc.getElementsByAttributeValueMatching(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_VALUE);
@@ -80,7 +81,8 @@ public class OverclockersFetchingService implements FetchingService {
         User user = getUserFromElement(element);
         user = checkAndSaveUser(session, user);
 
-        Topic topic = getTopicFromElement(element, user);
+        Topic topic = getTopicFromElement(element);
+        topic.setTopicStarter(user);
         checkAndSaveTopic(session, topic);
     }
 
@@ -104,25 +106,30 @@ public class OverclockersFetchingService implements FetchingService {
         return user;
     }
 
-    private Topic getTopicFromElement(Element element, User user) {
+    private Topic getTopicFromElement(Element element) {
         String topicCity = elementParser.getTopicCity(element);
         String topicTitle = elementParser.getTopicTitle(element);
         String topicLink = elementParser.getTopicLink(element);
+        LocalDateTime createdDateTime = LocalDateTime.now();
+        LocalDateTime lastMessageDateTime = elementParser.getLastMessageDateTime(element);
         return Topic.builder()
-                .topicStarter(user)
                 .city(topicCity)
                 .title(topicTitle)
                 .topicLink(topicLink)
+                .createdDateTime(createdDateTime)
+                .lastMessageDateTime(lastMessageDateTime)
                 .build();
     }
 
     private User getUserFromElement(Element element) {
         String authorUsername = elementParser.getAuthorUsername(element);
         String authorProfileLink = elementParser.getAuthorProfileLink(element);
+        LocalDateTime createdDateTime = LocalDateTime.now();
 
         return User.builder()
                 .username(authorUsername)
                 .profileLink(authorProfileLink)
+                .createdDateTime(createdDateTime)
                 .build();
     }
 

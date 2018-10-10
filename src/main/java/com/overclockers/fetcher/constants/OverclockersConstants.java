@@ -6,6 +6,8 @@ public class OverclockersConstants {
     public static final String USER_PROFILE_PATH = "memberlist.php?mode=viewprofile&u=";
     public static final String TOPIC_PATH = "viewtopic.php?f=26&t=";
     public static final String ELEMENT_CLASS_KEY = "class";
+    public static final String ELEMENT_TOPIC_KEY = "title";
+    public static final String ELEMENT_LAST_MESSAGE_VALUE = "Перейти к последнему сообщению";
     public static final String ELEMENT_TOPIC_VALUE = "row bg[1,2]$|row bg[1,2]( sticky){1}$";
     public static final String ELEMENT_AUTHOR_VALUE = "author";
     public static final String ELEMENT_TOPIC_TITLE_VALUE = "topictitle";

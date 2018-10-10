@@ -28,8 +28,8 @@ public class Topic {
     private String title;
     @Column(name = "topicLink")
     private String topicLink;
-    @Column(name = "topicDateTime")
-    private LocalDateTime topicDateTime;
     @Column(name = "createdDateTime")
     private LocalDateTime createdDateTime;
+    @Column(name = "lastMessageDateTime")
+    private LocalDateTime lastMessageDateTime;
 }

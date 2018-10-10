@@ -1,14 +1,19 @@
 package com.overclockers.fetcher.parser;
 
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
+@Slf4j
 @Component
 public class OverclockersElementParser implements ElementParser {
 
+    private static final String DATE_TIME_FORMAT_ERROR = "Last message date time format is not valid";
     private static final String USER_PROFILE_DELIMITER = "&u=";
     private static final String TOPIC_DELIMITER = "&t=";
     private static final String SID_DELIMITER = "&sid=";
@@ -69,6 +74,29 @@ public class OverclockersElementParser implements ElementParser {
         Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         String topicHref = topicElements.select(A_TAG).attr(HREF_ATTRIBUTE);
         return getTopicLink(topicHref);
+    }
+
+    @Override
+    public LocalDateTime getLastMessageDateTime(Element element) {
+        Element lastMessageElement = element.getElementsByAttributeValue(ELEMENT_TOPIC_KEY, ELEMENT_LAST_MESSAGE_VALUE).first();
+        String lastMessageDateTime = lastMessageElement.text();
+        boolean isDateTimeValid = lastMessageDateTime.matches("^\\d{2}[.]\\d{2}[.]\\d{4}\\s\\d{2}[:]\\d{2}$");
+        if (!isDateTimeValid) {
+            log.error(DATE_TIME_FORMAT_ERROR + ": {}", lastMessageDateTime);
+            throw new IllegalArgumentException(DATE_TIME_FORMAT_ERROR);
+        }
+
+        return parseLocalDateTime(lastMessageDateTime);
+    }
+
+    private LocalDateTime parseLocalDateTime(String lastMessageDateTime) {
+        int dayOfMonth = Integer.parseInt(lastMessageDateTime.substring(0, 2));
+        int month = Integer.parseInt(lastMessageDateTime.substring(3, 5));
+        int year = Integer.parseInt(lastMessageDateTime.substring(6, 10));
+        int hour = Integer.parseInt(lastMessageDateTime.substring(11, 13));
+        int minute = Integer.parseInt(lastMessageDateTime.substring(14, 16));
+
+        return LocalDateTime.of(year, month, dayOfMonth, hour, minute);
     }
 
     @Override

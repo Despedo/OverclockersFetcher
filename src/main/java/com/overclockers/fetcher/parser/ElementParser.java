@@ -2,6 +2,8 @@ package com.overclockers.fetcher.parser;
 
 import org.jsoup.nodes.Element;
 
+import java.time.LocalDateTime;
+
 public interface ElementParser {
     String getTopicTitle(Element element);
 
@@ -10,6 +12,8 @@ public interface ElementParser {
     String getTopicId(Element element);
 
     String getTopicLink(Element element);
+
+    LocalDateTime getLastMessageDateTime(Element element);
 
     String getAuthorUsername(Element element);
 
