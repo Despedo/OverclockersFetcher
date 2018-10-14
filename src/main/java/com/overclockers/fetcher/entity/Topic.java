@@ -19,17 +19,17 @@ public class Topic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "topicId")
     private Long topicId;
-    @JoinColumn(name = "topicStarterId", nullable = false)
+    @JoinColumn(name = "userId", nullable = false)
     @ManyToOne(targetEntity = User.class)
-    private User topicStarter;
+    private User user;
     @Column(name = "location")
     private String location;
     @Column(name = "title")
     private String title;
     @Column(name = "topicForumId")
-    private String topicForumId;
+    private Long topicForumId;
     @Column(name = "createdDateTime")
     private LocalDateTime createdDateTime;
-    @Column(name = "lastMessageDateTime")
-    private LocalDateTime lastMessageDateTime;
+    @Column(name = "sentToUser")
+    private boolean sentToUser;
 }

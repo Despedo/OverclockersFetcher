@@ -4,7 +4,6 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -22,11 +21,8 @@ public class User {
     private Long userId;
     @Column(name = "userName")
     private String username;
-    @Column(name = "profileForumId")
-    private String profileForumId;
+    @Column(name = "userForumId")
+    private Long userForumId;
     @Column(name = "createdDateTime")
     private LocalDateTime createdDateTime;
-    @JoinColumn(name = "topicId")
-    @OneToMany(targetEntity = Topic.class)
-    private List<Topic> topics;
 }

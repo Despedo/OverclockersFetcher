@@ -1,6 +1,6 @@
 package com.overclockers.fetcher.parser;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
-@Slf4j
+@Log4j2
 @Component
 public class OverclockersElementParser implements ElementParser {
 

@@ -1,25 +1,33 @@
 package com.overclockers.fetcher;
 
+import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.OverclockersFetchingService;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @Component
-@Slf4j
+@Log4j2
 public class ScheduledTask {
 
     @Autowired
     OverclockersFetchingService overclockersFetchingService;
+    @Autowired
+    MailService mailService;
 
-    // By the default the top of every hour of every day.
-    @Scheduled(cron = "${cron.exp:0 0 * * * *}")
-    public void fetchTopics() {
-        log.info("Start saving topics, {}", LocalDateTime.now());
+    //     By the default the top of every hour of every day.
+    @Scheduled(cron = "${fetch.cron:0 0 * * * *}")
+    public void fetchTopics() throws InterruptedException {
+        log.info("Scheduled launching of the fetching service");
         overclockersFetchingService.saveTopics();
+    }
+
+    //     By the default every 5-th minute of hour of every day.
+    @Scheduled(cron = "${email.cron:0 5 * * * *}")
+    public void sendEmail() {
+        log.info("Scheduled launching of the mail service");
+        mailService.prepareAndSendEmail();
     }
 
 }
