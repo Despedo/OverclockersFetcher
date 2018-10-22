@@ -13,7 +13,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
-        User existing = repository.findByForumId(user.getUserForumId());
+        User existing = repository.findUserByForumId(user.getUserForumId());
         return existing == null ? repository.save(user) : existing;
     }
 

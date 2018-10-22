@@ -15,21 +15,30 @@ public class TopicServiceImpl implements TopicService {
     private TopicRepository repository;
 
     @Override
-    public Topic saveTopic(Topic topic) {
-        Topic existing = repository.findByForumId(topic.getTopicForumId());
-        return existing == null ? repository.save(topic) : existing;
+    public Topic saveOrUpdateTopic(Topic topic) {
+        Topic existing = repository.findTopicByForumId(topic.getTopicForumId());
+        if (existing == null) {
+            return repository.save(topic);
+        } else if(!existing.equals(topic)){
+            topic.setTopicId(existing.getTopicId());
+            topic.setSentToUser(false);
+            return repository.save(topic);
+        }
+        else {
+            return existing;
+        }
     }
 
     @Transactional
     @Override
-    public void updateTopicsStatus(List<Topic> topicList, boolean isSent) {
+    public void updateTopicsStatuses(List<Topic> topicList, boolean isSent) {
         for (Topic topic : topicList) {
-            repository.updateTopicsStatus(topic.getTopicId(), isSent);
+            repository.updateTopicsStatuses(topic.getTopicId(), isSent);
         }
     }
 
     @Override
-    public List<Topic> findTopicsByLikeTitle(String searchTitle) {
-        return repository.findAllByLikeTitle(searchTitle);
+    public List<Topic> findTopicsForSending(String searchTitle) {
+        return repository.findTopicsForSending(searchTitle);
     }
 }

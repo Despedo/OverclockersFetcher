@@ -5,9 +5,9 @@ import com.overclockers.fetcher.entity.Topic;
 import java.util.List;
 
 public interface TopicService {
-    Topic saveTopic(Topic topic);
+    Topic saveOrUpdateTopic(Topic topic);
 
-    void updateTopicsStatus(List<Topic> topicList, boolean isSent);
+    void updateTopicsStatuses(List<Topic> topicList, boolean isSent);
 
-    List<Topic> findTopicsByLikeTitle(String searchTitle);
+    List<Topic> findTopicsForSending(String searchTitle);
 }

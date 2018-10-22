@@ -9,8 +9,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -31,43 +29,47 @@ public class OverclockersFetchingService implements FetchingService {
     @Autowired
     UserService userService;
 
-    @Value("${pages.fetching.size:1}")
-    private int pagesFetchingSize;
-
-    @Autowired
-    private ApplicationArguments arguments;
+    private boolean isColdStart = true;
 
     @Override
     public void saveTopics() {
         String firstPageUrl = HOST_URL + FIRST_PAGE_SELLING_PATH;
-        int nextPage = 0;
-        for (int i = 0; i < pagesFetchingSize; i++) {
-            if (i == 0) {
-                savePage(firstPageUrl);
-            } else {
-                int nextPageShift = 40;
-                nextPage += nextPageShift;
-                String nextPageUrl = firstPageUrl + "&start=" + nextPage;
-                savePage(nextPageUrl);
+
+        if (isColdStart) {
+            int coldStartFetchingSize = 10;
+            int nextPage = 0;
+            for (int i = 0; i < coldStartFetchingSize; i++) {
+                if (i == 0) {
+                    savePage(firstPageUrl);
+                } else {
+                    String nextPageUrl = firstPageUrl + "&start=" + nextPage;
+                    int nextPageShift = 40;
+                    nextPage += nextPageShift;
+                    savePage(nextPageUrl);
+                }
             }
+        } else {
+            savePage(firstPageUrl);
+            isColdStart = false;
         }
     }
 
     private void savePage(String url) {
-        Elements elements = getElementsFromUrl(url);
+        Document document = getDocumentFromUrl(url);
+        Elements elements = elementParser.getPageTopicElements(document);
 
         for (Element element : elements) {
-            User user = getUserFromElement(element);
+            User user = getUser(element);
             User savedUser = userService.saveUser(user);
 
-            Topic topic = getTopicFromElement(element);
+            Topic topic = getTopic(element);
             topic.setUser(savedUser);
-            topicService.saveTopic(topic);
+            topicService.saveOrUpdateTopic(topic);
         }
 
     }
 
-    private Elements getElementsFromUrl(String url) {
+    public Document getDocumentFromUrl(String url) {
         Document doc;
         try {
             doc = Jsoup.connect(url).get();
@@ -75,31 +77,57 @@ public class OverclockersFetchingService implements FetchingService {
             log.error(URL_CONNECTING_ERROR + ": {}", url);
             throw new IllegalArgumentException(URL_CONNECTING_ERROR);
         }
-        return doc.getElementsByAttributeValueMatching(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_VALUE);
+        return doc;
     }
 
-    private Topic getTopicFromElement(Element element) {
-        String topicLocation = elementParser.getTopicLocation(element);
-        String topicTitle = elementParser.getTopicTitle(element);
-        String topicForumId = elementParser.getTopicForumId(element);
-        LocalDateTime createdDateTime = LocalDateTime.now();
+    private Topic getTopic(Element element) {
+        String location = elementParser.getTopicLocation(element);
+        String title = elementParser.getTopicTitle(element);
+        String forumId = elementParser.getTopicForumId(element);
+        String link = elementParser.getTopicLink(element);
+        LocalDateTime lastMessageDateTime = elementParser.getLastMessageDateTime(element);
+
+        Document document = getDocumentFromUrl(link);
+        LocalDateTime createdDateTime = getFirstMessageDateTime(document);
+        LocalDateTime updatedDateTime = getUpdatedDateTime(document);
+
         return Topic.builder()
-                .location(topicLocation)
-                .title(topicTitle)
-                .topicForumId(Long.valueOf(topicForumId))
+                .location(location)
+                .title(title)
+                .topicForumId(Long.valueOf(forumId))
                 .createdDateTime(createdDateTime)
+                .updatedDateTime(updatedDateTime)
+                .lastMessageDateTime(lastMessageDateTime)
                 .build();
     }
 
-    private User getUserFromElement(Element element) {
-        String authorUsername = elementParser.getAuthorUsername(element);
-        String userForumId = elementParser.getAuthorProfileForumId(element);
-        LocalDateTime createdDateTime = LocalDateTime.now();
+    private LocalDateTime getUpdatedDateTime(Document document) {
+        LocalDateTime updatedDateTime;
+        Elements noticeElements = document.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_NOTICE_VALUE);
+        if (!noticeElements.isEmpty()) {
+            Element noticeEditedElement = noticeElements.first();
+            updatedDateTime = elementParser.getDateTime(noticeEditedElement);
+        } else {
+            updatedDateTime = null;
+        }
+        return updatedDateTime;
+    }
+
+    private LocalDateTime getFirstMessageDateTime(Document document) {
+        Elements authorElements = document.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
+        Element firstMessageElement = authorElements.select("p").first();
+        return elementParser.getDateTime(firstMessageElement);
+    }
+
+    private User getUser(Element element) {
+        String username = elementParser.getAuthorUsername(element);
+        String forumId = elementParser.getAuthorProfileForumId(element);
+        LocalDateTime registeredDateTime = LocalDateTime.now();
 
         return User.builder()
-                .username(authorUsername)
-                .userForumId(Long.valueOf(userForumId))
-                .createdDateTime(createdDateTime)
+                .username(username)
+                .userForumId(Long.valueOf(forumId))
+                .registeredDateTime(registeredDateTime)
                 .build();
     }
 

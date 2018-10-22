@@ -18,6 +18,7 @@ public class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "topicId")
+    @EqualsAndHashCode.Exclude
     private Long topicId;
     @JoinColumn(name = "userId", nullable = false)
     @ManyToOne(targetEntity = User.class)
@@ -30,6 +31,10 @@ public class Topic {
     private Long topicForumId;
     @Column(name = "createdDateTime")
     private LocalDateTime createdDateTime;
+    @Column(name = "updatedDateTime")
+    private LocalDateTime updatedDateTime;
+    @Column(name = "lastMessageDateTime")
+    private LocalDateTime lastMessageDateTime;
     @Column(name = "sentToUser")
     private boolean sentToUser;
 }

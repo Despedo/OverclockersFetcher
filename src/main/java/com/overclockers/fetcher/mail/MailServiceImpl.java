@@ -43,11 +43,10 @@ public class MailServiceImpl implements MailService {
 
         List<Topic> topics = new ArrayList<>();
         for (String searchTitle : searchList) {
-            topics.addAll(topicService.findTopicsByLikeTitle(searchTitle));
+            topics.addAll(topicService.findTopicsForSending(searchTitle));
         }
 
         if (!topics.isEmpty()) {
-            log.info("Found {} topics for the request '{}'", topics.size(), searchRequest);
             String htmlText = render.renderHtmlTextForEmail(searchList, topics);
 
             Email email = EmailBuilder.startingBlank()
@@ -57,9 +56,10 @@ public class MailServiceImpl implements MailService {
                     .withHTMLText(htmlText)
                     .buildEmail();
 
+            log.info("Found {} topics for the request '{}', sending email.", topics.size(), searchRequest);
             mailer.sendMail(email);
 
-            topicService.updateTopicsStatus(topics, true);
+            topicService.updateTopicsStatuses(topics, true);
         } else {
             log.info("No topics were found the request '{}'", searchRequest);
         }

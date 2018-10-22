@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("FROM User u WHERE u.userForumId = :userForumId")
-    User findByForumId(@Param("userForumId") Long userForumId);
+    User findUserByForumId(@Param("userForumId") Long userForumId);
 }

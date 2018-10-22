@@ -1,30 +1,31 @@
 package com.overclockers.fetcher.parser;
 
 import lombok.extern.log4j.Log4j2;
+import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
 @Log4j2
 @Component
 public class OverclockersElementParser implements ElementParser {
 
-    private static final String DATE_TIME_FORMAT_ERROR = "Last message date time format is not valid";
+    private static final String DATE_TIME_REGEXP = "\\d{2}.\\d{2}.\\d{4}\\s\\d{2}:\\d{2}";
+    private static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
+    private static final String DATE_TIME_FORMAT_ERROR = "Message date time format is not valid";
     private static final String USER_PROFILE_DELIMITER = "&u=";
     private static final String TOPIC_DELIMITER = "&t=";
     private static final String SID_DELIMITER = "&sid=";
     private static final String A_TAG = "a";
     private static final String HREF_ATTRIBUTE = "href";
-
-    private String getLocationFromTopic(String topic) {
-        int start = topic.indexOf('[') + 1;
-        int end = topic.indexOf(']');
-        return topic.substring(start, end);
-    }
 
     private String removeCityFromTopic(String topic) {
         return topic.substring(topic.indexOf(']') + 2);
@@ -59,7 +60,14 @@ public class OverclockersElementParser implements ElementParser {
     @Override
     public String getTopicLocation(Element element) {
         Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
-        return getLocationFromTopic(topicElements.text());
+        String topicText = topicElements.text();
+        if (topicText.contains("[") && topicText.contains("]")) {
+            int start = topicText.indexOf('[') + 1;
+            int end = topicText.indexOf(']');
+            return topicText.substring(start, end);
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -87,6 +95,10 @@ public class OverclockersElementParser implements ElementParser {
         }
 
         return parseLocalDateTime(lastMessageDateTime);
+    }
+
+    public Elements getPageTopicElements(Document document) {
+        return document.getElementsByAttributeValueMatching(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_VALUE_REGEXP);
     }
 
     private LocalDateTime parseLocalDateTime(String lastMessageDateTime) {
@@ -117,5 +129,19 @@ public class OverclockersElementParser implements ElementParser {
         Elements authorElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
         String profileHref = authorElements.select(A_TAG).attr(HREF_ATTRIBUTE);
         return getUserProfileLink(profileHref);
+    }
+
+    public LocalDateTime getDateTime(Element element) {
+        Pattern dateTimePattern = Pattern.compile("(" + DATE_TIME_REGEXP + ")");
+        Matcher dateTimeMatcher = dateTimePattern.matcher(element.text());
+
+        String messageDateTime = "";
+        if (dateTimeMatcher.find()) {
+            messageDateTime = dateTimeMatcher.group(1);
+        }
+
+        checkArgument(messageDateTime.matches(DATE_TIME_REGEXP), DATE_TIME_FORMAT_ERROR, messageDateTime);
+
+        return LocalDateTime.parse(messageDateTime, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 }

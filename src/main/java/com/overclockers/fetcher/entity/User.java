@@ -23,6 +23,6 @@ public class User {
     private String username;
     @Column(name = "userForumId")
     private Long userForumId;
-    @Column(name = "createdDateTime")
-    private LocalDateTime createdDateTime;
+    @Column(name = "registeredDateTime")
+    private LocalDateTime registeredDateTime;
 }
