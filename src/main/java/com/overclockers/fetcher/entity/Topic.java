@@ -36,5 +36,6 @@ public class Topic {
     @Column(name = "lastMessageDateTime")
     private LocalDateTime lastMessageDateTime;
     @Column(name = "sentToUser")
+    @EqualsAndHashCode.Exclude
     private boolean sentToUser;
 }
