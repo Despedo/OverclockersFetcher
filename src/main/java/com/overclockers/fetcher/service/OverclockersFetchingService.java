@@ -36,6 +36,7 @@ public class OverclockersFetchingService implements FetchingService {
         String firstPageUrl = HOST_URL + FIRST_PAGE_SELLING_PATH;
 
         if (isColdStart) {
+            log.info("Fetching cold start");
             int coldStartFetchingSize = 10;
             int nextPage = 0;
             for (int i = 0; i < coldStartFetchingSize; i++) {
@@ -48,9 +49,9 @@ public class OverclockersFetchingService implements FetchingService {
                     savePage(nextPageUrl);
                 }
             }
+            isColdStart = false;
         } else {
             savePage(firstPageUrl);
-            isColdStart = false;
         }
     }
 
