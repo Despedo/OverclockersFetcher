@@ -4,7 +4,7 @@ import com.overclockers.fetcher.entity.Topic;
 import j2html.tags.DomContent;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
 import static com.overclockers.fetcher.constants.OverclockersConstants.HOST_URL;
 import static com.overclockers.fetcher.constants.OverclockersConstants.TOPIC_PATH;
@@ -15,7 +15,7 @@ public class HtmlRender {
 
     private static final String IMG_URL = "https://imgur.com/RUa4aSe.png";
 
-    public String renderHtmlTextForEmail(List<String> searchList, List<Topic> topics) {
+    public String renderHtmlTextForEmail(Set<String> searchList, Set<Topic> topics) {
         return html(
                 body(
                         hr(),
@@ -26,8 +26,8 @@ public class HtmlRender {
         ).render();
     }
 
-    private DomContent generateTopicsContent(List<String> searchList, List<Topic> topics) {
-        return each(searchList, search ->
+    private DomContent generateTopicsContent(Set<String> searchSet, Set<Topic> topics) {
+        return each(searchSet, search ->
                 p().with(
                         strong("According to your request: " + search),
                         iffElse(filter(topics, topic -> topic.getTitle().contains(search)).isEmpty(), li("No results."),

@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -39,15 +37,15 @@ public class MailServiceImpl implements MailService {
     @Override
     public void prepareAndSendEmail() {
 
-        List<String> searchList = Arrays.asList(searchRequest.split(","));
+        Set<String> stringSet = new HashSet<>(Arrays.asList(searchRequest.split(",")));
 
-        List<Topic> topics = new ArrayList<>();
-        for (String searchTitle : searchList) {
+        Set<Topic> topics = new HashSet<>();
+        for (String searchTitle : stringSet) {
             topics.addAll(topicService.findTopicsForSending(searchTitle));
         }
 
         if (!topics.isEmpty()) {
-            String htmlText = render.renderHtmlTextForEmail(searchList, topics);
+            String htmlText = render.renderHtmlTextForEmail(stringSet, topics);
 
             Email email = EmailBuilder.startingBlank()
                     .from(SENDER_NAME, mailer.getServerConfig().getUsername())
@@ -57,6 +55,7 @@ public class MailServiceImpl implements MailService {
                     .buildEmail();
 
             log.info("Found {} topics for the request '{}', sending email.", topics.size(), searchRequest);
+            log.info("Topics [{}]", topics);
             mailer.sendMail(email);
 
             topicService.updateTopicsStatuses(topics, true);

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class TopicServiceImpl implements TopicService {
@@ -31,8 +32,8 @@ public class TopicServiceImpl implements TopicService {
 
     @Transactional
     @Override
-    public void updateTopicsStatuses(List<Topic> topicList, boolean isSent) {
-        for (Topic topic : topicList) {
+    public void updateTopicsStatuses(Set<Topic> topicSet, boolean isSent) {
+        for (Topic topic : topicSet) {
             repository.updateTopicsStatuses(topic.getTopicId(), isSent);
         }
     }
