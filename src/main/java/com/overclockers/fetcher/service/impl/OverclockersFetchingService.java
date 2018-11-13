@@ -1,8 +1,11 @@
-package com.overclockers.fetcher.service;
+package com.overclockers.fetcher.service.impl;
 
-import com.overclockers.fetcher.entity.Topic;
-import com.overclockers.fetcher.entity.User;
+import com.overclockers.fetcher.entity.ForumTopic;
+import com.overclockers.fetcher.entity.ForumUser;
 import com.overclockers.fetcher.parser.OverclockersElementParser;
+import com.overclockers.fetcher.service.FetchingService;
+import com.overclockers.fetcher.service.ForumTopicService;
+import com.overclockers.fetcher.service.ForumUserService;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,9 +28,9 @@ public class OverclockersFetchingService implements FetchingService {
     @Autowired
     OverclockersElementParser elementParser;
     @Autowired
-    TopicService topicService;
+    ForumTopicService topicService;
     @Autowired
-    UserService userService;
+    ForumUserService userService;
 
     private boolean isColdStart = true;
 
@@ -60,10 +63,10 @@ public class OverclockersFetchingService implements FetchingService {
         Elements elements = elementParser.getPageTopicElements(document);
 
         for (Element element : elements) {
-            User user = getUser(element);
-            User savedUser = userService.saveUser(user);
+            ForumUser user = getUser(element);
+            ForumUser savedUser = userService.saveUser(user);
 
-            Topic topic = getTopic(element);
+            ForumTopic topic = getTopic(element);
             topic.setUser(savedUser);
             topicService.saveOrUpdateTopic(topic);
         }
@@ -81,7 +84,7 @@ public class OverclockersFetchingService implements FetchingService {
         return doc;
     }
 
-    private Topic getTopic(Element element) {
+    private ForumTopic getTopic(Element element) {
         String location = elementParser.getTopicLocation(element);
         String title = elementParser.getTopicTitle(element);
         String forumId = elementParser.getTopicForumId(element);
@@ -92,7 +95,7 @@ public class OverclockersFetchingService implements FetchingService {
         LocalDateTime createdDateTime = getFirstMessageDateTime(document);
         LocalDateTime updatedDateTime = getUpdatedDateTime(document);
 
-        return Topic.builder()
+        return ForumTopic.builder()
                 .location(location)
                 .title(title)
                 .topicForumId(Long.valueOf(forumId))
@@ -120,12 +123,12 @@ public class OverclockersFetchingService implements FetchingService {
         return elementParser.getDateTime(firstMessageElement);
     }
 
-    private User getUser(Element element) {
+    private ForumUser getUser(Element element) {
         String username = elementParser.getAuthorUsername(element);
         String forumId = elementParser.getAuthorProfileForumId(element);
         LocalDateTime registeredDateTime = LocalDateTime.now();
 
-        return User.builder()
+        return ForumUser.builder()
                 .username(username)
                 .userForumId(Long.valueOf(forumId))
                 .registeredDateTime(registeredDateTime)

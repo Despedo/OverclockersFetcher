@@ -4,25 +4,25 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
 @Entity
 @ToString
-@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User {
+@Table(name = "applicationUser")
+public class ApplicationUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "userId")
     private Long userId;
     @Column(name = "userName")
-    private String username;
-    @Column(name = "userForumId")
-    private Long userForumId;
-    @Column(name = "registeredDateTime")
-    private LocalDateTime registeredDateTime;
+    private String userName;
+    @Column(name = "email")
+    private String email;
+    @Column(name = "createdDateTime")
+    private LocalDateTime createdDateTime;
 }

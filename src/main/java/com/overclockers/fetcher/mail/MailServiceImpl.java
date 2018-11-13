@@ -1,7 +1,7 @@
 package com.overclockers.fetcher.mail;
 
-import com.overclockers.fetcher.entity.Topic;
-import com.overclockers.fetcher.service.TopicService;
+import com.overclockers.fetcher.entity.ForumTopic;
+import com.overclockers.fetcher.service.ForumTopicService;
 import lombok.extern.log4j.Log4j2;
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
@@ -25,7 +25,7 @@ public class MailServiceImpl implements MailService {
     @Autowired
     private HtmlRender render;
     @Autowired
-    private TopicService topicService;
+    private ForumTopicService topicService;
     @Autowired
     Mailer mailer;
 
@@ -39,7 +39,7 @@ public class MailServiceImpl implements MailService {
 
         Set<String> stringSet = new HashSet<>(Arrays.asList(searchRequest.split(",")));
 
-        Set<Topic> topics = new HashSet<>();
+        Set<ForumTopic> topics = new HashSet<>();
         for (String searchTitle : stringSet) {
             topics.addAll(topicService.findTopicsForSending(searchTitle));
         }

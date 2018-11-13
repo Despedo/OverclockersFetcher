@@ -1,6 +1,6 @@
 package com.overclockers.fetcher.mail;
 
-import com.overclockers.fetcher.entity.Topic;
+import com.overclockers.fetcher.entity.ForumTopic;
 import j2html.tags.DomContent;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class HtmlRender {
 
     private static final String IMG_URL = "https://imgur.com/RUa4aSe.png";
 
-    public String renderHtmlTextForEmail(Set<String> searchList, Set<Topic> topics) {
+    public String renderHtmlTextForEmail(Set<String> searchList, Set<ForumTopic> topics) {
         return html(
                 body(
                         hr(),
@@ -26,7 +26,7 @@ public class HtmlRender {
         ).render();
     }
 
-    private DomContent generateTopicsContent(Set<String> searchSet, Set<Topic> topics) {
+    private DomContent generateTopicsContent(Set<String> searchSet, Set<ForumTopic> topics) {
         return each(searchSet, search ->
                 p().with(
                         strong("According to your request: " + search),
@@ -39,7 +39,7 @@ public class HtmlRender {
         );
     }
 
-    private String getTopicUrl(Topic topic) {
+    private String getTopicUrl(ForumTopic topic) {
         return HOST_URL + TOPIC_PATH + topic.getTopicForumId();
     }
 }

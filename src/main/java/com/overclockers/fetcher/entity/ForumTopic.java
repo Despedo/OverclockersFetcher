@@ -13,16 +13,16 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "topics")
-public class Topic {
+@Table(name = "forumTopic")
+public class ForumTopic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "topicId")
     @EqualsAndHashCode.Exclude
     private Long topicId;
     @JoinColumn(name = "userId", nullable = false)
-    @ManyToOne(targetEntity = User.class)
-    private User user;
+    @ManyToOne(targetEntity = ForumUser.class)
+    private ForumUser user;
     @Column(name = "location")
     private String location;
     @Column(name = "title")

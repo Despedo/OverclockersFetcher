@@ -1,7 +1,7 @@
 package com.overclockers.fetcher;
 
 import com.overclockers.fetcher.mail.MailService;
-import com.overclockers.fetcher.service.OverclockersFetchingService;
+import com.overclockers.fetcher.service.impl.OverclockersFetchingService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;

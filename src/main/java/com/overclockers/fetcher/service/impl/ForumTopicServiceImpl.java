@@ -1,7 +1,8 @@
-package com.overclockers.fetcher.service;
+package com.overclockers.fetcher.service.impl;
 
-import com.overclockers.fetcher.entity.Topic;
-import com.overclockers.fetcher.repository.TopicRepository;
+import com.overclockers.fetcher.entity.ForumTopic;
+import com.overclockers.fetcher.repository.ForumTopicRepository;
+import com.overclockers.fetcher.service.ForumTopicService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,14 +11,14 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class TopicServiceImpl implements TopicService {
+public class ForumTopicServiceImpl implements ForumTopicService {
 
     @Autowired
-    private TopicRepository repository;
+    private ForumTopicRepository repository;
 
     @Override
-    public Topic saveOrUpdateTopic(Topic topic) {
-        Topic existing = repository.findTopicByForumId(topic.getTopicForumId());
+    public ForumTopic saveOrUpdateTopic(ForumTopic topic) {
+        ForumTopic existing = repository.findTopicByForumId(topic.getTopicForumId());
         if (existing == null) {
             return repository.save(topic);
         } else if(!existing.equals(topic)){
@@ -32,14 +33,14 @@ public class TopicServiceImpl implements TopicService {
 
     @Transactional
     @Override
-    public void updateTopicsStatuses(Set<Topic> topicSet, boolean isSent) {
-        for (Topic topic : topicSet) {
+    public void updateTopicsStatuses(Set<ForumTopic> topicSet, boolean isSent) {
+        for (ForumTopic topic : topicSet) {
             repository.updateTopicsStatuses(topic.getTopicId(), isSent);
         }
     }
 
     @Override
-    public List<Topic> findTopicsForSending(String searchTitle) {
+    public List<ForumTopic> findTopicsForSending(String searchTitle) {
         return repository.findTopicsForSending(searchTitle);
     }
 }
