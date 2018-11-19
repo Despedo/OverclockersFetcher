@@ -17,12 +17,12 @@ public class ScheduledTask {
     MailService mailService;
 
     //     By the default the top of every hour of every day.
-    @Scheduled(cron = "${processing.cron:0 0 * * * *}")
+//    @Scheduled(cron = "${processing.cron:0 0 * * * *}")
     public void processTopics() throws InterruptedException {
         log.info("Scheduled launching of the fetching service");
         overclockersFetchingService.saveTopics();
         log.info("Scheduled launching of the mail service");
-        mailService.prepareAndSendEmail();
+        mailService.prepareAndSendSearchResults();
     }
 
 }

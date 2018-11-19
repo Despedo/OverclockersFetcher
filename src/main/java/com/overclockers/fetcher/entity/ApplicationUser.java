@@ -3,8 +3,9 @@ package com.overclockers.fetcher.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -13,16 +14,28 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "applicationUser")
+@Table(name = "user_application")
 public class ApplicationUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userId")
+    @Column(name = "user_application_id")
     private Long userId;
-    @Column(name = "userName")
-    private String userName;
-    @Column(name = "email")
+    @Column(name = "email", nullable = false, unique = true)
+    @Email(message = "Please provide a valid e-mail")
+    @NotEmpty(message = "Please provide an e-mail")
     private String email;
-    @Column(name = "createdDateTime")
+    @Column(name = "password")
+    private  String password;
+    @Column(name = "first_name", nullable = false)
+    @NotEmpty(message = "Please provide your first name")
+    private String firstName;
+    @Column(name = "last_name", nullable = false)
+    @NotEmpty(message = "Please provide your last name")
+    private String lastName;
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled;
+    @Column(name = "confirmation_token")
+    private String confirmationToken;
+    @Column(name = "created_datetime", nullable = false)
     private LocalDateTime createdDateTime;
 }

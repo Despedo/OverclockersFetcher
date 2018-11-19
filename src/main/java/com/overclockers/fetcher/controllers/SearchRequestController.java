@@ -5,17 +5,20 @@ import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.service.ApplicationUserService;
 import com.overclockers.fetcher.service.SearchRequestService;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Controller
-public class MainController {
+@Log4j2
+public class SearchRequestController {
 
     @Autowired
     private SearchRequestConverter requestConverter;
@@ -26,33 +29,29 @@ public class MainController {
     @Autowired
     private ApplicationUserService userService;
 
-    private String errorMessage;
-    private String successMessage;
-
-
     @GetMapping(value = {"/request"})
-    public String addRequestForm(Model model) {
-        model.addAttribute("errorMessage", errorMessage);
-        model.addAttribute("successMessage", successMessage);
+    public ModelAndView addRequestForm(ModelAndView modelAndView) {
 
-        ApplicationUser user = userService.findUserByUserName("test");
+        ApplicationUser user = userService.findUserByEmail("despedo@gmail.com");
         List<SearchRequest> requests = searchRequestService.findSearchRequestByUserId(user.getUserId());
 
-        model.addAttribute("requestsList", requestConverter.convertSearchRequests(requests));
+        modelAndView.addObject("searchRequests", requestConverter.convertSearchRequests(requests));
+        modelAndView.addObject("emptyMessage", "No requests");
+        modelAndView.setViewName("request");
 
-        errorMessage = null;
-        successMessage = null;
-
-        return "request";
+        return modelAndView;
     }
 
     @PostMapping(value = {"/request"})
-    public String addRequest(@ModelAttribute("searchRequest") String searchRequest) {
+    public ModelAndView addRequest(ModelAndView modelAndView, @RequestParam Map<String, String> requestParams) {
 
-        ApplicationUser user = userService.findUserByUserName("test");
+        String searchRequest = requestParams.get("searchRequest");
+
         if (StringUtils.isEmpty(searchRequest)) {
-            errorMessage = "Добавьте запрос для поиска!";
+            log.info("Search request is empty");
         } else {
+            ApplicationUser user = userService.findUserByEmail("despedo@gmail.com");
+
             SearchRequest request = SearchRequest.builder()
                     .request(searchRequest)
                     .createdDateTime(LocalDateTime.now())
@@ -60,18 +59,21 @@ public class MainController {
                     .build();
 
             searchRequestService.saveSearchRequest(request);
-            successMessage = "Запрос создан";
         }
 
-        return "redirect:/request";
+        modelAndView.setViewName("redirect:/request");
+
+        return modelAndView;
     }
 
     @RequestMapping(value = {"/request/remove/{id}"})
-    public String removeRequest(@PathVariable("id") Long id) {
+    public ModelAndView removeRequest(ModelAndView modelAndView, @PathVariable("id") Long id) {
 
         searchRequestService.deleteSearchRequest(id);
 
-        return "redirect:/request";
+        modelAndView.setViewName("redirect:/request");
+
+        return modelAndView;
     }
 
 }

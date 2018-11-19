@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="Request"/>
+    <link rel="icon" type="image/png" href="ico/search-icon.png"/>
+
+    <title>Request</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous"/>
+
+    <link th:href="@{css/style.css}" rel="stylesheet"/>
+    <link th:href="@{css/fv.css}" rel="stylesheet"/>
+</head>
+
+<body class="gray-bg">
+
+<div class="middle-box text-center requestSubmit animated fadeInDown">
+    <div>
+
+        <hr/>
+        <h2>What are you looking for?</h2>
+
+        <form autocomplete="off" action="#" th:action="@{/request}"
+              method="post" class="m-t" id="requestForm" role="form" data-toggle="validator">
+
+            <div class="form-group input-group">
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-search"></span>
+                </span>
+                <input name="searchRequest" type="text" id="searchRequest"
+                       placeholder="Search request" class="form-control" required/>
+            </div>
+
+            <button type="submit" class="btn btn-primary block full-width m-b">
+                Submit
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<div class="middle-box text-center requestTable animated fadeInDown">
+
+    <h2>Created requests</h2>
+    <!--<div class="row col-md-7 table-responsive">-->
+    <table id="requestTable" class="table" style="margin-bottom: 10px">
+        <thead>
+        <tr>
+            <th class="text-center">Request</th>
+            <th class="text-center">Created</th>
+            <th class="text-center">Delete</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="request, rowStat: ${searchRequests}"
+            th:style="${rowStat.odd} ? 'color: gray' : 'color: #676a6c;'">
+            <td th:text="${request.request}"></td>
+            <td th:text="${request.createdDateTime}"></td>
+            <td>
+                <button name="delete" class="btn btn-primary center-block"
+                        th:onclick="'window.location.href = \'' + @{/request/remove/{id}(id=${request.requestId})} + '\''">
+                    Delete
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${searchRequests.size()} == 0" class="alert alert-info" role="alert" th:text=${emptyMessage}></div>
+    <!--</div>-->
+
+    <!-- jQuery-->
+    <script
+            src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script
+            src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <!-- Bootstrap Validator plugin -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+
+</body>
+</html>

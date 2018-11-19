@@ -5,9 +5,9 @@ import com.overclockers.fetcher.entity.ApplicationUser;
 public interface ApplicationUserService {
     ApplicationUser findUserById(Long userId);
 
-    ApplicationUser findUserByUserName(String userName);
-
     ApplicationUser findUserByEmail(String email);
+
+    ApplicationUser findUserByConfirmationToken(String confirmationToken);
 
     ApplicationUser saveUser(ApplicationUser user);
 

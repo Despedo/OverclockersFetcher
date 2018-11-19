@@ -18,13 +18,13 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     }
 
     @Override
-    public ApplicationUser findUserByUserName(String userName) {
-        return repository.findUserByUserName(userName);
+    public ApplicationUser findUserByEmail(String email) {
+        return repository.findUserByEmail(email);
     }
 
     @Override
-    public ApplicationUser findUserByEmail(String email) {
-        return repository.findUserByEmail(email);
+    public ApplicationUser findUserByConfirmationToken(String confirmationToken) {
+        return repository.findUserByConfirmationToken(confirmationToken);
     }
 
     @Override

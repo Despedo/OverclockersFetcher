@@ -13,29 +13,29 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "forumTopic")
+@Table(name = "topic")
 public class ForumTopic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "topicId")
+    @Column(name = "topic_id", nullable = false, updatable = false)
     @EqualsAndHashCode.Exclude
     private Long topicId;
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "user_forum_id")
     @ManyToOne(targetEntity = ForumUser.class)
     private ForumUser user;
     @Column(name = "location")
     private String location;
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
-    @Column(name = "topicForumId")
+    @Column(name = "forum_id",nullable = false, unique = true)
     private Long topicForumId;
-    @Column(name = "createdDateTime")
+    @Column(name = "created_datetime", nullable = false)
     private LocalDateTime createdDateTime;
-    @Column(name = "updatedDateTime")
+    @Column(name = "updated_datetime", nullable = false)
     private LocalDateTime updatedDateTime;
-    @Column(name = "lastMessageDateTime")
+    @Column(name = "last_message_datetime", nullable = false)
     private LocalDateTime lastMessageDateTime;
-    @Column(name = "sentToUser")
+    @Column(name = "sent_to_user")
     @EqualsAndHashCode.Exclude
     private boolean sentToUser;
 }

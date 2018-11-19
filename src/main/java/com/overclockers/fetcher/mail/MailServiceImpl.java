@@ -1,5 +1,6 @@
 package com.overclockers.fetcher.mail;
 
+import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.service.ForumTopicService;
 import lombok.extern.log4j.Log4j2;
@@ -19,7 +20,8 @@ import java.util.*;
 @Import(SimpleJavaMailSpringSupport.class)
 public class MailServiceImpl implements MailService {
 
-    private static final String EMAIL_SUBJECT = "Topics according to your request";
+    private static final String SEARCH_REQUEST_EMAIL_SUBJECT = "Topics according to your request";
+    private static final String REGISTRATION_EMAIL_SUBJECT = "Registration Confirmation";
     private static final String SENDER_NAME = "Overclockers FS";
 
     @Autowired
@@ -35,7 +37,7 @@ public class MailServiceImpl implements MailService {
     private String appUserEmail;
 
     @Override
-    public void prepareAndSendEmail() {
+    public void prepareAndSendSearchResults() {
 
         Set<String> stringSet = new HashSet<>(Arrays.asList(searchRequest.split(",")));
 
@@ -45,12 +47,12 @@ public class MailServiceImpl implements MailService {
         }
 
         if (!topics.isEmpty()) {
-            String htmlText = render.renderHtmlTextForEmail(stringSet, topics);
+            String htmlText = render.renderHtmlTextForSearchRequestEmail(stringSet, topics);
 
             Email email = EmailBuilder.startingBlank()
                     .from(SENDER_NAME, mailer.getServerConfig().getUsername())
                     .to(appUserEmail)
-                    .withSubject(EMAIL_SUBJECT)
+                    .withSubject(SEARCH_REQUEST_EMAIL_SUBJECT)
                     .withHTMLText(htmlText)
                     .buildEmail();
 
@@ -62,5 +64,19 @@ public class MailServiceImpl implements MailService {
         } else {
             log.info("No topics were found the request '{}'", searchRequest);
         }
+    }
+
+    @Override
+    public void prepareAndSendRegistrationEmail(ApplicationUser user, String appUrl) {
+
+        Email email = EmailBuilder.startingBlank()
+                .from(SENDER_NAME, mailer.getServerConfig().getUsername())
+                .to(user.getEmail())
+                .withSubject(REGISTRATION_EMAIL_SUBJECT)
+                .withPlainText("To confirm your e-mail address, please click the link below:\n"
+                        + appUrl + "/confirm?token=" + user.getConfirmationToken())
+                .buildEmail();
+
+        mailer.sendMail(email);
     }
 }

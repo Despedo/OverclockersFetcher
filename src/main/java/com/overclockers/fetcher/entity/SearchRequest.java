@@ -12,17 +12,17 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "searchRequest")
+@Table(name = "request")
 public class SearchRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "requestId")
+    @Column(name = "request_id")
     private Long requestId;
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "application_user_id")
     @ManyToOne(targetEntity = ApplicationUser.class)
     private ApplicationUser user;
-    @Column(name = "request")
+    @Column(name = "request", nullable = false)
     private String request;
-    @Column(name = "createdDateTime")
+    @Column(name = "created_datetime", nullable = false)
     private LocalDateTime createdDateTime;
 }

@@ -13,16 +13,16 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "forumUser")
+@Table(name = "user_forum")
 public class ForumUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "userId")
+    @Column(name = "user_forum_id")
     private Long userId;
-    @Column(name = "userName")
+    @Column(name = "user_name", nullable = false)
     private String username;
-    @Column(name = "userForumId")
+    @Column(name = "forum_id", nullable = false, unique = true)
     private Long userForumId;
-    @Column(name = "registeredDateTime")
+    @Column(name = "registered_datetime", nullable = false)
     private LocalDateTime registeredDateTime;
 }

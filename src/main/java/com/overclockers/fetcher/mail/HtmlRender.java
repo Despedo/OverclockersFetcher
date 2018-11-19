@@ -15,7 +15,7 @@ public class HtmlRender {
 
     private static final String IMG_URL = "https://imgur.com/RUa4aSe.png";
 
-    public String renderHtmlTextForEmail(Set<String> searchList, Set<ForumTopic> topics) {
+    public String renderHtmlTextForSearchRequestEmail(Set<String> searchList, Set<ForumTopic> topics) {
         return html(
                 body(
                         hr(),
