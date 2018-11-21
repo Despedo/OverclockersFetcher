@@ -78,7 +78,7 @@ public class RegisterController {
 
             userService.saveUser(user);
 
-            String appUrl = request.getScheme() + request.getServerPort() + "://" + request.getServerName();
+            String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 
             mailService.prepareAndSendRegistrationEmail(user, appUrl);
 

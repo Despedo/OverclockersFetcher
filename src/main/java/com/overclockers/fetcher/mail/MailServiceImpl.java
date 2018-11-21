@@ -69,12 +69,13 @@ public class MailServiceImpl implements MailService {
     @Override
     public void prepareAndSendRegistrationEmail(ApplicationUser user, String appUrl) {
 
+        String htmlText = render.renderHtmlTextForRegistrationConfirmation(appUrl + "/confirm?token=" + user.getConfirmationToken());
+
         Email email = EmailBuilder.startingBlank()
                 .from(SENDER_NAME, mailer.getServerConfig().getUsername())
                 .to(user.getEmail())
                 .withSubject(REGISTRATION_EMAIL_SUBJECT)
-                .withPlainText("To confirm your e-mail address, please click the link below:\n"
-                        + appUrl + "/confirm?token=" + user.getConfirmationToken())
+                .withHTMLText(htmlText)
                 .buildEmail();
 
         mailer.sendMail(email);

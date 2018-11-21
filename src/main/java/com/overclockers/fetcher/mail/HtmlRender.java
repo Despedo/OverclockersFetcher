@@ -26,6 +26,18 @@ public class HtmlRender {
         ).render();
     }
 
+    public String renderHtmlTextForRegistrationConfirmation(String href) {
+        return html(
+                body(
+                        hr(),
+                        img().withSrc(IMG_URL),
+                        hr(),
+                        text("To confirm your e-mail address, please click "),
+                        a().withText("the link").withHref(href)
+                )
+        ).render();
+    }
+
     private DomContent generateTopicsContent(Set<String> searchSet, Set<ForumTopic> topics) {
         return each(searchSet, search ->
                 p().with(
