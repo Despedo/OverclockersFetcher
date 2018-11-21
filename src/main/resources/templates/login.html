@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Login" />
-    <link rel="icon" type="image/png" href="ico/search-icon.png"/>
+    <link rel="icon" type="image/png" href="images/search-icon.png"/>
 
     <title>Login</title>
 
@@ -16,8 +16,8 @@
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
           crossorigin="anonymous" />
 
-    <link th:href="@{css/style.css}" rel="stylesheet" />
-    <link th:href="@{css/fv.css}" rel="stylesheet" />
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
+    <link th:href="@{/css/fv.css}" rel="stylesheet" />
 </head>
 
 <body class="gray-bg">
@@ -33,16 +33,16 @@
              <!--role="alert" th:text=${errorMessage}>-->
         <!--</div>-->
 
-        <form autocomplete="off" action="#" th:action="@{/register}"  th:object="${user}"
-              method="post" class="m-t" id="loginForm" role="form" data-toggle="validator">
+        <!--<form th:if="!${invalidToken}" class="m-t" id="passwordForm" role="form" action="#"-->
+              <!--th:object="${setPassword}" th:action="@{/confirm}" method="post">-->
+        <form action="#" th:action="@{/login}" method="post" class="m-t" id="loginForm" role="form" data-toggle="validator">
 
             <div class="form-group input-group has-feedback">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-envelope"></span>
                 </span>
-                <input type="email" th:field="*{email}"
-                    placeholder="Email Address" class="form-control"
-                    data-error="This email address is invalid" required />
+                <input name="username" type="email" id="username"
+                    placeholder="Email Address" class="form-control" data-error="This email address is invalid" required />
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
             </div>
 
@@ -50,7 +50,7 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-lock"></span>
                 </span>
-                <input type="password" th:field="*{password}"
+                <input name="password" type="password" id="password"
                        placeholder="Password" class="form-control" required />
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
             </div>
