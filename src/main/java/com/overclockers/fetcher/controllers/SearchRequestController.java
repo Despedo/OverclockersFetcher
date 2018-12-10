@@ -29,6 +29,13 @@ public class SearchRequestController {
     @Autowired
     private ApplicationUserService userService;
 
+    @GetMapping(value = {"/"})
+    public ModelAndView mainPage(ModelAndView modelAndView){
+        modelAndView.setViewName("redirect:/request");
+
+        return modelAndView;
+    }
+
     @GetMapping(value = {"/request"})
     public ModelAndView addRequestForm(ModelAndView modelAndView) {
 

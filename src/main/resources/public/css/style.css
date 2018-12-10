@@ -4463,6 +4463,12 @@ body.mini-navbar.fixed-sidebar .logo-element {
   text-align: right;
   width: 15%;
 }
+/* Other */
+.mobile-right {
+  text-align: -webkit-right;
+  width: fit-content;
+  margin-right: 0px;
+}
 /* ERROR & LOGIN & LOCKSCREEN*/
 .middle-box {
   max-width: 400px;
@@ -4477,11 +4483,12 @@ body.mini-navbar.fixed-sidebar .logo-element {
 .loginscreen.middle-box {
   width: 300px;
 }
-.requestTable.middle-box {
-  width: 500px;
-}
+/*.requestTable.middle-box {*/
+  /*width: 500px;*/
+/*}*/
 .requestSubmit.middle-box {
   width: 300px;
+  padding-top: 0px;
 }
 .loginColumns {
   max-width: 800px;
@@ -12100,7 +12107,7 @@ body.body-small .footer.fixed {
   border-top: 1px solid #e7eaec;
   line-height: 1.42857;
   padding: 8px;
-  vertical-align: top;
+  vertical-align: middle;
 }
 /* PANELS */
 .panel.blank-panel {
@@ -13031,7 +13038,7 @@ body.mini-navbar.fixed-sidebar .logo-element {
   max-width: 400px;
   z-index: 100;
   margin: 0 auto;
-  padding-top: 40px;
+  padding-top: 50px;
 }
 .lockscreen.middle-box {
   width: 200px;

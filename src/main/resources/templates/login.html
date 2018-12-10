@@ -6,15 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Login" />
-    <link rel="icon" type="image/png" href="images/search-icon.png"/>
+    <link rel="icon" type="image/png" href="images/search-icon.png" />
 
     <title>Login</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossorigin="anonymous" />
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
 
     <link th:href="@{/css/style.css}" rel="stylesheet" />
     <link th:href="@{/css/fv.css}" rel="stylesheet" />
@@ -23,26 +20,22 @@
 <body class="gray-bg">
 
 <div class="middle-box text-center loginscreen animated fadeInDown">
-    <div>
 
         <hr />
-        <h4>Enter your login (email) and password</h4>
+        <h3>Enter your login (email) and password</h3>
 
         <!--<div th:if="${errorMessage}"-->
-             <!--class="alert alert-danger"-->
-             <!--role="alert" th:text=${errorMessage}>-->
+        <!--class="alert alert-danger"-->
+        <!--role="alert" th:text=${errorMessage}>-->
         <!--</div>-->
 
-        <!--<form th:if="!${invalidToken}" class="m-t" id="passwordForm" role="form" action="#"-->
-              <!--th:object="${setPassword}" th:action="@{/confirm}" method="post">-->
-        <form action="#" th:action="@{/login}" method="post" class="m-t" id="loginForm" role="form" data-toggle="validator">
+        <form action="#" th:action="@{/login}" method="post" class="m-t" role="form" data-toggle="validator">
 
             <div class="form-group input-group has-feedback">
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-envelope"></span>
                 </span>
-                <input name="username" type="email" id="username"
-                    placeholder="Email Address" class="form-control" data-error="This email address is invalid" required />
+                <input name="username" type="email" id="username" placeholder="Email Address" class="form-control" data-error="This email address is invalid" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
             </div>
 
@@ -50,63 +43,28 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-lock"></span>
                 </span>
-                <input name="password" type="password" id="password"
-                       placeholder="Password" class="form-control" required />
-                <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                <input name="password" type="password" id="password" placeholder="Password" class="form-control" required/>
+                <!--<span class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
             </div>
 
             <button type="submit" class="btn btn-primary block full-width m-b">
-                Login
+                <span class="glyphicon glyphicon-log-in m-r-sm"></span> Login
             </button>
 
         </form>
 
-        <button name="register" type="submit" class="btn btn-primary block full-width m-b"
-                th:onclick="'window.location.href = \'' + @{/register} + '\''">
-            Register
-        </button>
+        <div class="alert alert-light" role="alert">
+            If you are not registered, you can do it <a href="/register" class="alert-link">here</a>.
+        </div>
 
-    </div>
 </div>
 
 <!-- jQuery-->
-<script
-        src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <!-- Bootstrap -->
-<script
-        src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-        crossorigin="anonymous"></script>
-
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 <!-- Bootstrap Validator plugin -->
 <script src="//cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
-
-<script src="//cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.4.2/zxcvbn.js"></script>
-
-<script th:src="@{js/fv.min.js}"></script>
-<script>
-    $(document).ready(function() {
-        $('#loginForm').formValidation({
-            framework: 'bootstrap',
-            icon: {
-                valid: 'glyphicon glyphicon-ok',
-                invalid: 'glyphicon glyphicon-remove',
-                validating: 'glyphicon glyphicon-refresh'
-            },
-            fields: {
-
-                password: {
-                    validators: {
-                        notEmpty: {
-                            message: 'The password is required'
-                        }
-                    }
-                }
-            }
-        });
-    });
-</script>
 
 </body>
 </html>
