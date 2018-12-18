@@ -18,6 +18,6 @@ public class ApplicationUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         ApplicationUser applicationUser = userService.findUserByEmail(username);
-        return ApplicationUserDetails.builder().user(applicationUser).build();
+        return new ApplicationUserDetails(applicationUser);
     }
 }

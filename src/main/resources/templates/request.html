@@ -21,7 +21,7 @@
 
 <div class="container-fluid mobile-right">
     <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> You are logged as: user</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> <span th:text ="${#authentication.getName()}"></span></a></li>
         <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
     </ul>
 </div>
@@ -69,7 +69,7 @@
         </tbody>
     </table>
 
-    <div th:if="${searchRequests.size()} == 0" class="alert alert-info" role="alert" th:text=${emptyMessage}></div>
+    <div th:if="${searchRequests.size()} == 0" class="alert alert-info" role="alert" th:text="${emptyMessage}"></div>
 </div>
 
 <!-- jQuery-->

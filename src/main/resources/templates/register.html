@@ -63,7 +63,7 @@
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-envelope"></span>
                     </span>
-                    <input type="email" th:field="*{email}" placeholder="Email Address" class="form-control" data-error="This email address is invalid" required/>
+                    <input type="email" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" th:field="*{email}" placeholder="Email Address" class="form-control" data-error="This email address is invalid" required/>
                     <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
                 </div>
 

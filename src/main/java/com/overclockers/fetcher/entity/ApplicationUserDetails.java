@@ -1,6 +1,5 @@
 package com.overclockers.fetcher.entity;
 
-import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,10 +8,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Builder
 public class ApplicationUserDetails implements UserDetails {
 
     ApplicationUser user;
+
+    public ApplicationUserDetails(ApplicationUser user) {
+        if(user == null){
+            this.user = ApplicationUser.builder().build();
+        }
+        else{
+            this.user = user;
+        }
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

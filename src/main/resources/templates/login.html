@@ -24,10 +24,30 @@
         <hr />
         <h3>Enter your login (email) and password</h3>
 
-        <!--<div th:if="${errorMessage}"-->
-        <!--class="alert alert-danger"-->
-        <!--role="alert" th:text=${errorMessage}>-->
+        <!--<div class="error" th:if="${errorMsg}"-->
+             <!--th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION'].getValueNames()}">-->
+            <!--Reason: <span th:text="${errorMsg}">Wrong input!</span>-->
         <!--</div>-->
+
+        <!--<div th:if="${principal} and ${session}" th:with="errorMsg=${session['SPRING_SECURITY_LAST_EXCEPTION']}">-->
+            <!--<div class="alert alert-dismissible alert-danger error">-->
+                <!--Reason: <span th:text="${errorMsg}">Demo Invalid input</span>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="error"-->
+             <!--th:if="${param.login_error}"-->
+             <!--th:with="errorMsg=${session["SPRING_SECURITY_LAST_EXCEPTION"].message}">-->
+                <!--Your login attempt was not successful, try again.<br />-->
+                <!--Reason: <span th:text="${errorMsg}">Wrong input!</span>-->
+        <!--</div>-->
+
+    <!--<div th:if="${#authorization.getAuthentication.getName()}">-->
+        <!--This will only be displayed if authenticated user has role ROLE_ADMIN.-->
+    <!--</div>-->
+
+    <div th:if="${loginError}" class="alert alert-danger" role="alert">Wrong user or password</div>
+    <!--<p th:if="${loginError}" class="error">Wrong user or password</p>-->
 
         <form action="#" th:action="@{/login}" method="post" class="m-t" role="form" data-toggle="validator">
 
@@ -35,7 +55,8 @@
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-envelope"></span>
                 </span>
-                <input name="username" type="email" id="username" placeholder="Email Address" class="form-control" data-error="This email address is invalid" required/>
+                <input name="username" type="email" pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+                       id="username" placeholder="Email Address" class="form-control" data-error="This email address is invalid" required/>
                 <span class="glyphicon form-control-feedback" aria-hidden="true"></span>
             </div>
 
