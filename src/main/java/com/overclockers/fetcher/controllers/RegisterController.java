@@ -33,33 +33,26 @@ public class RegisterController {
     @Autowired
     ApplicationUserService userService;
     @Autowired
-    private SearchRequestService searchRequestService;
-    @Autowired
     MailService mailService;
 
     @GetMapping(value = "/login")
-    public ModelAndView showLoginPage(ModelAndView modelAndView, ApplicationUser user) {
-        modelAndView.addObject("user", user);
-        modelAndView.setViewName("login");
-        return modelAndView;
-    }
-
-    @GetMapping("/login-error")
-    public ModelAndView loginError(ModelAndView modelAndView) {
-        modelAndView.addObject("loginError", true);
-        modelAndView.setViewName("login");
+    public ModelAndView showLoginPage(@RequestParam(required = false, value = "error", defaultValue = "false") boolean error) {
+        ModelAndView modelAndView = new ModelAndView("login");
+        modelAndView.addObject("loginError", error);
         return modelAndView;
     }
 
     @GetMapping(value = "/register")
-    public ModelAndView showRegistrationPage(ModelAndView modelAndView, ApplicationUser user) {
+    public ModelAndView showRegistrationPage(ApplicationUser user) {
+        ModelAndView modelAndView = new ModelAndView("register");
         modelAndView.addObject("user", user);
-        modelAndView.setViewName("register");
         return modelAndView;
     }
 
     @PostMapping(value = "/register")
-    public ModelAndView processRegistrationForm(ModelAndView modelAndView, @Valid ApplicationUser user, BindingResult bindingResult, HttpServletRequest request) {
+    public ModelAndView processRegistrationForm(@Valid ApplicationUser user, BindingResult bindingResult, HttpServletRequest request) {
+
+        ModelAndView modelAndView = new ModelAndView("register");
 
         // Lookup user in database by e-mail
         ApplicationUser existingUser = userService.findUserByEmail(user.getEmail());
@@ -72,34 +65,31 @@ public class RegisterController {
             bindingResult.reject("email");
         }
 
-        if (bindingResult.hasErrors()) {
-            modelAndView.setViewName("register");
-        } else {
+        // Disable user until they click on confirmation link in email
+        user.setEnabled(false);
 
-            // Disable user until they click on confirmation link in email
-            user.setEnabled(false);
+        // Generate random 36-character string token for confirmation link
+        user.setConfirmationToken(UUID.randomUUID().toString());
 
-            // Generate random 36-character string token for confirmation link
-            user.setConfirmationToken(UUID.randomUUID().toString());
+        user.setCreatedDateTime(LocalDateTime.now());
 
-            user.setCreatedDateTime(LocalDateTime.now());
+        userService.saveUser(user);
 
-            userService.saveUser(user);
+        String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
 
-            String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        mailService.prepareAndSendRegistrationEmail(user, appUrl);
 
-            mailService.prepareAndSendRegistrationEmail(user, appUrl);
-
-            modelAndView.addObject("user", user);
-            modelAndView.addObject("confirmationMessage", "A confirmation e-mail has been sent to " + user.getEmail());
-            modelAndView.setViewName("register");
-        }
+        modelAndView.addObject("user", user);
+        modelAndView.addObject("confirmationMessage", "A confirmation e-mail has been sent to " + user.getEmail());
+        modelAndView.setViewName("register");
 
         return modelAndView;
     }
 
     @GetMapping(value = "/confirm")
-    public ModelAndView showConfirmationPage(ModelAndView modelAndView, @RequestParam("token") String token) {
+    public ModelAndView showConfirmationPage(@RequestParam("token") String token) {
+
+        ModelAndView modelAndView = new ModelAndView("confirm");
 
         ApplicationUser user = userService.findUserByConfirmationToken(token);
 
@@ -110,12 +100,13 @@ public class RegisterController {
             modelAndView.addObject("confirmationToken", user.getConfirmationToken());
         }
 
-        modelAndView.setViewName("confirm");
         return modelAndView;
     }
 
     @PostMapping(value = "/confirm")
-    public ModelAndView processConfirmationForm(ModelAndView modelAndView, BindingResult bindingResult, @RequestParam Map<String, String> requestParams, RedirectAttributes redirectAttr) {
+    public ModelAndView processConfirmationForm(BindingResult bindingResult, @RequestParam Map<String, String> requestParams, RedirectAttributes redirectAttr) {
+
+        ModelAndView modelAndView = new ModelAndView("redirect:confirm?token=" + requestParams.get("token"));
 
         modelAndView.setViewName("confirm");
 
@@ -127,9 +118,6 @@ public class RegisterController {
             bindingResult.reject("password");
 
             redirectAttr.addFlashAttribute("errorMessage", "Your password is too weak.  Choose a stronger one.");
-
-            modelAndView.setViewName("redirect:confirm?token=" + requestParams.get("token"));
-            System.out.println(requestParams.get("token"));
             return modelAndView;
         }
 

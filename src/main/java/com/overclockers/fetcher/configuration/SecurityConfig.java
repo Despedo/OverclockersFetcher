@@ -28,12 +28,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login")
-                .failureUrl("/login-error")
+                .defaultSuccessUrl("/request", true)
+                .failureUrl("/login?error=true")
                 .permitAll()
                 .and()
                 .logout()
+                .logoutSuccessUrl("/login")
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .permitAll();
+                .deleteCookies("JSESSIONID");
     }
 
     @Override
