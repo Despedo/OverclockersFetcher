@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ApplicationUserDetails implements UserDetails {
 
-    ApplicationUser user;
+    transient ApplicationUser user;
 
     public ApplicationUserDetails(ApplicationUser user) {
         if(user == null){

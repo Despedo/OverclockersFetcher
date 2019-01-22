@@ -20,18 +20,19 @@ import java.util.Map;
 @Log4j2
 public class SearchRequestController {
 
+    private static final String REQUEST_VIEW = "request";
+    private static final String REDIRECT = "redirect:/";
+
     @Autowired
     private SearchRequestConverter requestConverter;
-
     @Autowired
     private SearchRequestService searchRequestService;
-
     @Autowired
     private ApplicationUserService userService;
 
     @GetMapping(value = {"/"})
-    public ModelAndView mainPage(ModelAndView modelAndView){
-        modelAndView.setViewName("redirect:/request");
+    public ModelAndView mainPage(ModelAndView modelAndView) {
+        modelAndView.setViewName(REDIRECT + REQUEST_VIEW);
 
         return modelAndView;
     }
@@ -44,7 +45,7 @@ public class SearchRequestController {
 
         modelAndView.addObject("searchRequests", requestConverter.convertSearchRequests(requests));
         modelAndView.addObject("emptyMessage", "No requests");
-        modelAndView.setViewName("request");
+        modelAndView.setViewName(REQUEST_VIEW);
 
         return modelAndView;
     }
@@ -68,7 +69,7 @@ public class SearchRequestController {
             searchRequestService.saveSearchRequest(request);
         }
 
-        modelAndView.setViewName("redirect:/request");
+        modelAndView.setViewName(REDIRECT + REQUEST_VIEW);
 
         return modelAndView;
     }
@@ -78,7 +79,7 @@ public class SearchRequestController {
 
         searchRequestService.deleteSearchRequest(id);
 
-        modelAndView.setViewName("redirect:/request");
+        modelAndView.setViewName(REDIRECT + REQUEST_VIEW);
 
         return modelAndView;
     }
