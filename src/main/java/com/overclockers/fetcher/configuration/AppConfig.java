@@ -24,14 +24,14 @@ import java.util.Properties;
 @EnableJpaRepositories("com.overclockers.fetcher.repository")
 public class AppConfig implements WebMvcConfigurer {
 
-    private static final String PROP_DATABASE_DRIVER = "db.driver";
-    private static final String PROP_DATABASE_PASSWORD = "db.password";
-    private static final String PROP_DATABASE_URL = "db.url";
-    private static final String PROP_DATABASE_USERNAME = "db.username";
-    private static final String PROP_HIBERNATE_DIALECT = "hibernate.dialect";
-    private static final String PROP_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
-    private static final String PROP_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
-    private static final String PROP_HIBERNATE_HBM2DDL_AUTO = "hibernate.hbm2ddl.auto";
+    private static final String DATABASE_DRIVER = "db.driver";
+    private static final String DATABASE_PASSWORD = "db.password";
+    private static final String DATABASE_URL = "db.url";
+    private static final String DATABASE_USERNAME = "db.username";
+    private static final String HIBERNATE_DIALECT = "hibernate.dialect";
+    private static final String HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+    private static final String ENTITY_MANAGER_PACKAGES_TO_SCAN = "entity.manager.packages.to.scan";
+    private static final String HIBERNATE_HBM2DDL_AUTO = "hibernate.hbm2ddl.auto";
 
     @Resource
     private Environment env;
@@ -39,10 +39,10 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getRequiredProperty(PROP_DATABASE_DRIVER));
-        dataSource.setUrl(env.getRequiredProperty(PROP_DATABASE_URL));
-        dataSource.setUsername(env.getRequiredProperty(PROP_DATABASE_USERNAME));
-        dataSource.setPassword(env.getRequiredProperty(PROP_DATABASE_PASSWORD));
+        dataSource.setDriverClassName(env.getRequiredProperty(DATABASE_DRIVER));
+        dataSource.setUrl(env.getRequiredProperty(DATABASE_URL));
+        dataSource.setUsername(env.getRequiredProperty(DATABASE_USERNAME));
+        dataSource.setPassword(env.getRequiredProperty(DATABASE_PASSWORD));
 
         return dataSource;
     }
@@ -52,7 +52,7 @@ public class AppConfig implements WebMvcConfigurer {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource());
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-        entityManagerFactoryBean.setPackagesToScan(env.getRequiredProperty(PROP_ENTITYMANAGER_PACKAGES_TO_SCAN));
+        entityManagerFactoryBean.setPackagesToScan(env.getRequiredProperty(ENTITY_MANAGER_PACKAGES_TO_SCAN));
         entityManagerFactoryBean.setJpaProperties(getHibernateProperties());
 
         return entityManagerFactoryBean;
@@ -68,9 +68,9 @@ public class AppConfig implements WebMvcConfigurer {
 
     private Properties getHibernateProperties() {
         Properties properties = new Properties();
-        properties.put(PROP_HIBERNATE_DIALECT, env.getRequiredProperty(PROP_HIBERNATE_DIALECT));
-        properties.put(PROP_HIBERNATE_SHOW_SQL, env.getRequiredProperty(PROP_HIBERNATE_SHOW_SQL));
-        properties.put(PROP_HIBERNATE_HBM2DDL_AUTO, env.getRequiredProperty(PROP_HIBERNATE_HBM2DDL_AUTO));
+        properties.put(HIBERNATE_DIALECT, env.getRequiredProperty(HIBERNATE_DIALECT));
+        properties.put(HIBERNATE_SHOW_SQL, env.getRequiredProperty(HIBERNATE_SHOW_SQL));
+        properties.put(HIBERNATE_HBM2DDL_AUTO, env.getRequiredProperty(HIBERNATE_HBM2DDL_AUTO));
 
         return properties;
     }

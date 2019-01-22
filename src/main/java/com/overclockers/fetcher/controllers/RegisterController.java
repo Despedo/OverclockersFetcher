@@ -2,10 +2,10 @@ package com.overclockers.fetcher.controllers;
 
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
+import com.overclockers.fetcher.dto.UserDTO;
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ApplicationUserService;
-import com.overclockers.fetcher.service.SearchRequestService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -21,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,68 +28,73 @@ import java.util.UUID;
 @Log4j2
 public class RegisterController {
 
+    private static final String REGISTER_VIEW = "register";
+    private static final String LOGIN_VIEW = "login";
+    private static final String CONFIRM_VIEW = "confirm";
+    private static final String REDIRECT = "redirect:/";
+    private static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
+
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
-    ApplicationUserService userService;
+    private ApplicationUserService userService;
     @Autowired
-    MailService mailService;
+    private MailService mailService;
 
     @GetMapping(value = "/login")
-    public ModelAndView showLoginPage(@RequestParam(required = false, value = "error", defaultValue = "false") boolean error) {
-        ModelAndView modelAndView = new ModelAndView("login");
+    public ModelAndView showLoginPage(ModelAndView modelAndView, @RequestParam(required = false, value = "error", defaultValue = "false") boolean error) {
+        modelAndView.setViewName(LOGIN_VIEW);
         modelAndView.addObject("loginError", error);
         return modelAndView;
     }
 
     @GetMapping(value = "/register")
-    public ModelAndView showRegistrationPage(ApplicationUser user) {
-        ModelAndView modelAndView = new ModelAndView("register");
-        modelAndView.addObject("user", user);
+    public ModelAndView showRegistrationPage(ModelAndView modelAndView) {
+        modelAndView.setViewName(REGISTER_VIEW);
+        modelAndView.addObject("user", new UserDTO());
         return modelAndView;
     }
 
     @PostMapping(value = "/register")
-    public ModelAndView processRegistrationForm(@Valid ApplicationUser user, BindingResult bindingResult, HttpServletRequest request) {
-
-        ModelAndView modelAndView = new ModelAndView("register");
+    public ModelAndView processRegistrationForm(ModelAndView modelAndView, @Valid UserDTO user, BindingResult bindingResult, HttpServletRequest request) {
 
         // Lookup user in database by e-mail
         ApplicationUser existingUser = userService.findUserByEmail(user.getEmail());
 
         if (existingUser != null) {
             log.info("User already exists: {}", existingUser);
+            modelAndView.setViewName(REGISTER_VIEW);
             modelAndView.addObject("user", existingUser);
             modelAndView.addObject("errorMessage", "Oops!  There is already a user registered with the email provided.");
-            modelAndView.setViewName("register");
             bindingResult.reject("email");
+        } else {
+
+            ApplicationUser applicationUser = ApplicationUser.builder()
+                    .email(user.getEmail())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .enabled(true)
+                    .confirmationToken(UUID.randomUUID().toString())
+                    .createdDateTime(LocalDateTime.now())
+                    .build();
+
+            userService.saveUser(applicationUser);
+
+            String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+            mailService.prepareAndSendRegistrationEmail(applicationUser, appUrl);
+
+            modelAndView.setViewName(REGISTER_VIEW);
+            modelAndView.addObject("user", user);
+            modelAndView.addObject("confirmationMessage", "A confirmation e-mail has been sent to " + user.getEmail());
         }
-
-        // Disable user until they click on confirmation link in email
-        user.setEnabled(false);
-
-        // Generate random 36-character string token for confirmation link
-        user.setConfirmationToken(UUID.randomUUID().toString());
-
-        user.setCreatedDateTime(LocalDateTime.now());
-
-        userService.saveUser(user);
-
-        String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-
-        mailService.prepareAndSendRegistrationEmail(user, appUrl);
-
-        modelAndView.addObject("user", user);
-        modelAndView.addObject("confirmationMessage", "A confirmation e-mail has been sent to " + user.getEmail());
-        modelAndView.setViewName("register");
 
         return modelAndView;
     }
 
     @GetMapping(value = "/confirm")
-    public ModelAndView showConfirmationPage(@RequestParam("token") String token) {
+    public ModelAndView showConfirmationPage(ModelAndView modelAndView, @RequestParam("token") String token) {
 
-        ModelAndView modelAndView = new ModelAndView("confirm");
+        modelAndView.setViewName(CONFIRM_VIEW);
 
         ApplicationUser user = userService.findUserByConfirmationToken(token);
 
@@ -104,36 +109,43 @@ public class RegisterController {
     }
 
     @PostMapping(value = "/confirm")
-    public ModelAndView processConfirmationForm(BindingResult bindingResult, @RequestParam Map<String, String> requestParams, RedirectAttributes redirectAttr) {
+    public ModelAndView processConfirmationForm(ModelAndView modelAndView, BindingResult bindingResult, @RequestParam Map<String, String> requestParams, RedirectAttributes redirectAttr) {
 
-        ModelAndView modelAndView = new ModelAndView("redirect:confirm?token=" + requestParams.get("token"));
-
-        modelAndView.setViewName("confirm");
+        String password = requestParams.get("password");
+        String token = requestParams.get("token");
 
         Zxcvbn passwordCheck = new Zxcvbn();
 
-        Strength strength = passwordCheck.measure(requestParams.get("password"));
+        Strength strength = passwordCheck.measure(password);
 
         if (strength.getScore() < 3) {
             bindingResult.reject("password");
-
             redirectAttr.addFlashAttribute("errorMessage", "Your password is too weak.  Choose a stronger one.");
+            modelAndView.setViewName(REDIRECT + CONFIRM_VIEW + "?token=" + token);
+
             return modelAndView;
         }
 
-        // Find the user associated with the reset token
-        ApplicationUser user = userService.findUserByConfirmationToken(requestParams.get("token"));
+        ApplicationUser user = userService.findUserByConfirmationToken(token);
 
-        // Set new password
-        user.setPassword(bCryptPasswordEncoder.encode(requestParams.get("password")));
+        if (user.isEnabled()) {
+            bindingResult.reject("password");
+            String createdDateTime = user.getCreatedDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+            redirectAttr.addFlashAttribute("errorMessage", "User is already enabled." + "\n" + createdDateTime);
+            modelAndView.setViewName(REDIRECT + CONFIRM_VIEW + "?token=" + token);
 
-        // Set user to enabled
+            return modelAndView;
+        }
+
+
+        user.setPassword(bCryptPasswordEncoder.encode(password));
         user.setEnabled(true);
 
-        // Save user
         userService.saveUser(user);
 
+        modelAndView.setViewName(CONFIRM_VIEW);
         modelAndView.addObject("successMessage", "Your password has been set!");
+
         return modelAndView;
     }
 
