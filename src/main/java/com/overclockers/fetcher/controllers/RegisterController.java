@@ -99,8 +99,12 @@ public class RegisterController {
         ApplicationUser user = userService.findUserByConfirmationToken(token);
 
         if (user == null) {
-            log.info("invalid confirmation token: {}", token);
-            modelAndView.addObject("invalidToken", "Oops!  This is an invalid confirmation link.");
+            log.info("Invalid confirmation token: {}", token);
+            modelAndView.addObject("errorMessage", "Oops!  This is an invalid confirmation link.");
+        } else if (user.isEnabled()) {
+            log.info("User is already activated: {}", user.getEmail());
+            String createdDateTime = user.getCreatedDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+            modelAndView.addObject("errorMessage", "Oops!  User is already activated." + "\n" + createdDateTime);
         } else {
             modelAndView.addObject("confirmationToken", user.getConfirmationToken());
         }
@@ -127,16 +131,6 @@ public class RegisterController {
         }
 
         ApplicationUser user = userService.findUserByConfirmationToken(token);
-
-        if (user.isEnabled()) {
-            bindingResult.reject("password");
-            String createdDateTime = user.getCreatedDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
-            redirectAttr.addFlashAttribute("errorMessage", "User is already enabled." + "\n" + createdDateTime);
-            modelAndView.setViewName(REDIRECT + CONFIRM_VIEW + "?token=" + token);
-
-            return modelAndView;
-        }
-
 
         user.setPassword(bCryptPasswordEncoder.encode(password));
         user.setEnabled(true);
