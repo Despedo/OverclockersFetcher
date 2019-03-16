@@ -23,7 +23,7 @@ public class HtmlRender {
                         hr(),
                         generateTopicsContent(searchList, topics)
                 )
-        ).render();
+        ).renderFormatted();
     }
 
     public String renderHtmlTextForRegistrationConfirmation(String href) {
@@ -35,7 +35,7 @@ public class HtmlRender {
                         text("To confirm your e-mail address, please click "),
                         a().withText("the link").withHref(href)
                 )
-        ).render();
+        ).renderFormatted();
     }
 
     private DomContent generateTopicsContent(Set<String> searchSet, Set<ForumTopic> topics) {
