@@ -11,7 +11,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
 @Log4j2
@@ -140,8 +139,10 @@ public class OverclockersElementParser implements ElementParser {
             messageDateTime = dateTimeMatcher.group(1);
         }
 
-        checkArgument(messageDateTime.matches(DATE_TIME_REGEXP), DATE_TIME_FORMAT_ERROR, messageDateTime);
-
+        if (!messageDateTime.matches(DATE_TIME_REGEXP)) {
+            log.error(DATE_TIME_FORMAT_ERROR + ": {}", messageDateTime);
+            throw new IllegalArgumentException(DATE_TIME_FORMAT_ERROR);
+        }
         return LocalDateTime.parse(messageDateTime, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
     }
 }

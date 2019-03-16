@@ -2,12 +2,15 @@ package com.overclockers.fetcher.controllers;
 
 import com.overclockers.fetcher.SearchRequestConverter;
 import com.overclockers.fetcher.entity.ApplicationUser;
+import com.overclockers.fetcher.entity.ApplicationUserDetails;
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.service.ApplicationUserService;
 import com.overclockers.fetcher.service.SearchRequestService;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,12 +19,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static com.overclockers.fetcher.constants.ControllerConstants.*;
+
 @Controller
 @Log4j2
 public class SearchRequestController {
 
-    private static final String REQUEST_VIEW = "request";
-    private static final String REDIRECT = "redirect:/";
+    @Value("${no.requests.message}")
+    String noRequestsMessage;
 
     @Autowired
     private SearchRequestConverter requestConverter;
@@ -31,42 +36,48 @@ public class SearchRequestController {
     private ApplicationUserService userService;
 
     @GetMapping(value = {"/"})
-    public ModelAndView mainPage(ModelAndView modelAndView) {
+    public ModelAndView showMainPage(ModelAndView modelAndView) {
         modelAndView.setViewName(REDIRECT + REQUEST_VIEW);
 
         return modelAndView;
     }
 
     @GetMapping(value = {"/request"})
-    public ModelAndView addRequestForm(ModelAndView modelAndView) {
+    public ModelAndView showRequests(ModelAndView modelAndView, Authentication authentication) {
 
-        ApplicationUser user = userService.findUserByEmail("despedo@gmail.com");
-        List<SearchRequest> requests = searchRequestService.findSearchRequestByUserId(user.getUserId());
+        ApplicationUserDetails userDetails = (ApplicationUserDetails) authentication.getPrincipal();
 
-        modelAndView.addObject("searchRequests", requestConverter.convertSearchRequests(requests));
-        modelAndView.addObject("emptyMessage", "No requests");
+        List<SearchRequest> requests = searchRequestService.findSearchRequestByEmail(userDetails.getUsername());
+
+        modelAndView.addObject(SEARCH_REQUEST_ATTRIBUTE, requestConverter.convertSearchRequests(requests));
+        modelAndView.addObject(EMPTY_MESSAGE_ATTRIBUTE, noRequestsMessage);
         modelAndView.setViewName(REQUEST_VIEW);
 
         return modelAndView;
     }
 
     @PostMapping(value = {"/request"})
-    public ModelAndView addRequest(ModelAndView modelAndView, @RequestParam Map<String, String> requestParams) {
+    public ModelAndView processRequest(ModelAndView modelAndView, @RequestParam Map<String, String> requestParams, @AuthenticationPrincipal Authentication authentication) {
 
-        String searchRequest = requestParams.get("searchRequest");
+        String searchRequest = requestParams.get(SEARCH_REQUEST_ATTRIBUTE);
 
-        if (StringUtils.isEmpty(searchRequest)) {
+        if (searchRequest == null || searchRequest.isEmpty()) {
             log.info("Search request is empty");
         } else {
-            ApplicationUser user = userService.findUserByEmail("despedo@gmail.com");
 
-            SearchRequest request = SearchRequest.builder()
-                    .request(searchRequest)
-                    .createdDateTime(LocalDateTime.now())
-                    .user(user)
-                    .build();
+            ApplicationUserDetails userDetails = (ApplicationUserDetails) authentication.getPrincipal();
 
-            searchRequestService.saveSearchRequest(request);
+            ApplicationUser loggedUser = userService.findUserByEmail(userDetails.getUsername());
+
+            if (loggedUser != null && loggedUser.isEnabled()) {
+                SearchRequest request = SearchRequest.builder()
+                        .request(searchRequest)
+                        .createdDateTime(LocalDateTime.now())
+                        .user(loggedUser)
+                        .build();
+
+                searchRequestService.saveSearchRequest(request);
+            }
         }
 
         modelAndView.setViewName(REDIRECT + REQUEST_VIEW);
