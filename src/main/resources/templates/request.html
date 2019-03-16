@@ -58,7 +58,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="request, rowStat: ${searchRequests}" th:style="${rowStat.odd} ? 'color: gray' : 'color: #676a6c;'">
+        <tr th:each="request, rowStat: ${searchRequest}" th:style="${rowStat.odd} ? 'color: gray' : 'color: #676a6c;'">
             <td th:text="${request.request}"></td>
             <td th:text="${request.createdDateTime}"></td>
             <td>
@@ -69,7 +69,7 @@
         </tbody>
     </table>
 
-    <div th:if="${searchRequests.size()} == 0" class="alert alert-info" role="alert" th:text="${emptyMessage}"></div>
+    <div th:if="${searchRequest.size()} == 0" class="alert alert-info" role="alert" th:text="${emptyMessage}"></div>
 </div>
 
 <!-- jQuery-->

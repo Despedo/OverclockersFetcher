@@ -52,6 +52,7 @@ public class OverclockersFetchingService implements FetchingService {
                     savePage(nextPageUrl);
                 }
             }
+            log.info("Fetching cold start finished");
             isColdStart = false;
         } else {
             savePage(firstPageUrl);

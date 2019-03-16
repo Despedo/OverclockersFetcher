@@ -31,7 +31,7 @@ public class ForumTopic {
     private Long topicForumId;
     @Column(name = "created_datetime", nullable = false)
     private LocalDateTime createdDateTime;
-    @Column(name = "updated_datetime", nullable = false)
+    @Column(name = "updated_datetime")
     private LocalDateTime updatedDateTime;
     @Column(name = "last_message_datetime", nullable = false)
     private LocalDateTime lastMessageDateTime;

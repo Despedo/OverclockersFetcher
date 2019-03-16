@@ -18,6 +18,7 @@ public class ScheduledTask {
 
     //     By the default the top of every hour of every day.
 //    @Scheduled(cron = "${processing.cron:0 0 * * * *}")
+    @Scheduled(fixedRate = 20000)
     public void processTopics() throws InterruptedException {
         log.info("Scheduled launching of the fetching service");
         overclockersFetchingService.saveTopics();

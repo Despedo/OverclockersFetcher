@@ -32,10 +32,9 @@
         </a>
     </div>
 
-    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
-    <div th:if="${invalidToken}" class="alert alert-danger" role="alert" th:text="${invalidToken}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" style="white-space: pre;" th:text="${errorMessage}"></div>
 
-    <form th:if="!${invalidToken} and !${successMessage} and !${errorMessage}" class="m-t" id="passwordForm" role="form" action="#" th:action="@{/confirm}" method="post">
+    <form th:if="!${successMessage} and !${errorMessage}" class="m-t" id="passwordForm" role="form" action="#" th:action="@{/confirm}" method="post">
 
         <input type="hidden" name="token" th:value="${confirmationToken}">
 

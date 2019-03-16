@@ -7,6 +7,8 @@ import java.util.List;
 public interface SearchRequestService {
     List<SearchRequest> findSearchRequestByUserId(Long userId);
 
+    List<SearchRequest> findSearchRequestByEmail(String userName);
+
     SearchRequest findSearchRequestById(Long requestId);
 
     SearchRequest saveSearchRequest(SearchRequest request);

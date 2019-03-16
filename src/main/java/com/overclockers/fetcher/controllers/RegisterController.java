@@ -8,14 +8,15 @@ import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ApplicationUserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -24,15 +25,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.overclockers.fetcher.constants.ControllerConstants.*;
+
 @Controller
 @Log4j2
 public class RegisterController {
 
-    private static final String REGISTER_VIEW = "register";
-    private static final String LOGIN_VIEW = "login";
-    private static final String CONFIRM_VIEW = "confirm";
-    private static final String REDIRECT = "redirect:/";
-    private static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
+    @Value("${user.registered.message}")
+    String userRegisteredMessage;
+    @Value("${email.sent.message}")
+    String emailSentMessage;
+    @Value("${invalid.confirmation.link.message}")
+    String invalidConfirmationLinkMessage;
+    @Value("${activated.user.message}")
+    String activatedUserMessage;
+    @Value("${weak.pass.message}")
+    String weakPassMessage;
+    @Value("${pass.set.message}")
+    String passSetMessage;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -44,109 +54,114 @@ public class RegisterController {
     @GetMapping(value = "/login")
     public ModelAndView showLoginPage(ModelAndView modelAndView, @RequestParam(required = false, value = "error", defaultValue = "false") boolean error) {
         modelAndView.setViewName(LOGIN_VIEW);
-        modelAndView.addObject("loginError", error);
+        modelAndView.addObject(LOGIN_ERROR_ATTRIBUTE, error);
         return modelAndView;
     }
 
     @GetMapping(value = "/register")
     public ModelAndView showRegistrationPage(ModelAndView modelAndView) {
         modelAndView.setViewName(REGISTER_VIEW);
-        modelAndView.addObject("user", new UserDTO());
+        modelAndView.addObject(USER_ATTRIBUTE, new UserDTO());
         return modelAndView;
     }
 
     @PostMapping(value = "/register")
-    public ModelAndView processRegistrationForm(ModelAndView modelAndView, @Valid UserDTO user, BindingResult bindingResult, HttpServletRequest request) {
+    public ModelAndView processRegistrationForm(ModelAndView modelAndView, @Valid @ModelAttribute("user") UserDTO user, BindingResult bindingResult, HttpServletRequest request) {
+        modelAndView.setViewName(REGISTER_VIEW);
 
-        // Lookup user in database by e-mail
-        ApplicationUser existingUser = userService.findUserByEmail(user.getEmail());
-
-        if (existingUser != null) {
-            log.info("User already exists: {}", existingUser);
-            modelAndView.setViewName(REGISTER_VIEW);
-            modelAndView.addObject("user", existingUser);
-            modelAndView.addObject("errorMessage", "Oops!  There is already a user registered with the email provided.");
-            bindingResult.reject("email");
+        if (bindingResult.hasFieldErrors()) {
+            log.info("User validation error: {}", user);
+            modelAndView.addObject(USER_ATTRIBUTE, user);
         } else {
-
-            ApplicationUser applicationUser = ApplicationUser.builder()
-                    .email(user.getEmail())
-                    .firstName(user.getFirstName())
-                    .lastName(user.getLastName())
-                    .enabled(true)
-                    .confirmationToken(UUID.randomUUID().toString())
-                    .createdDateTime(LocalDateTime.now())
-                    .build();
-
-            userService.saveUser(applicationUser);
-
-            String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-            mailService.prepareAndSendRegistrationEmail(applicationUser, appUrl);
-
-            modelAndView.setViewName(REGISTER_VIEW);
-            modelAndView.addObject("user", user);
-            modelAndView.addObject("confirmationMessage", "A confirmation e-mail has been sent to " + user.getEmail());
+            // Lookup user in database by e-mail
+            ApplicationUser existingUser = userService.findUserByEmail(user.getEmail());
+            if (existingUser != null) {
+                log.info("User already exists: {}", existingUser);
+                modelAndView.addObject(USER_ATTRIBUTE, user);
+                modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, userRegisteredMessage);
+                bindingResult.reject("email");
+            } else {
+                processRegistration(user, request);
+                modelAndView.addObject(USER_ATTRIBUTE, user);
+                modelAndView.addObject(CONFIRMATION_MESSAGE_ATTRIBUTE, emailSentMessage + user.getEmail());
+            }
         }
 
         return modelAndView;
     }
 
+    private void processRegistration(UserDTO user, HttpServletRequest request) {
+        ApplicationUser applicationUser = ApplicationUser.builder()
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .enabled(false)
+                .confirmationToken(UUID.randomUUID().toString())
+                .createdDateTime(LocalDateTime.now())
+                .build();
+
+        userService.saveUser(applicationUser);
+
+        String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        mailService.prepareAndSendRegistrationEmail(applicationUser, appUrl);
+    }
+
     @GetMapping(value = "/confirm")
     public ModelAndView showConfirmationPage(ModelAndView modelAndView, @RequestParam("token") String token) {
-
         modelAndView.setViewName(CONFIRM_VIEW);
 
         ApplicationUser user = userService.findUserByConfirmationToken(token);
-
         if (user == null) {
-            log.info("invalid confirmation token: {}", token);
-            modelAndView.addObject("invalidToken", "Oops!  This is an invalid confirmation link.");
+            log.info("Invalid confirmation token: {}", token);
+            modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, invalidConfirmationLinkMessage);
+        } else if (user.isEnabled()) {
+            log.info("User is already activated: {}", user.getEmail());
+            String createdDateTime = user.getCreatedDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+            modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, activatedUserMessage + "\n" + createdDateTime);
         } else {
-            modelAndView.addObject("confirmationToken", user.getConfirmationToken());
+            modelAndView.addObject(CONFIRMATION_TOKEN_ATTRIBUTE, user.getConfirmationToken());
         }
 
         return modelAndView;
     }
 
     @PostMapping(value = "/confirm")
-    public ModelAndView processConfirmationForm(ModelAndView modelAndView, BindingResult bindingResult, @RequestParam Map<String, String> requestParams, RedirectAttributes redirectAttr) {
+    public ModelAndView processConfirmationForm(ModelAndView modelAndView, @RequestParam Map<String, String> requestParams) {
 
         String password = requestParams.get("password");
         String token = requestParams.get("token");
 
-        Zxcvbn passwordCheck = new Zxcvbn();
-
-        Strength strength = passwordCheck.measure(password);
-
-        if (strength.getScore() < 3) {
-            bindingResult.reject("password");
-            redirectAttr.addFlashAttribute("errorMessage", "Your password is too weak.  Choose a stronger one.");
-            modelAndView.setViewName(REDIRECT + CONFIRM_VIEW + "?token=" + token);
-
-            return modelAndView;
-        }
-
         ApplicationUser user = userService.findUserByConfirmationToken(token);
 
-        if (user.isEnabled()) {
-            bindingResult.reject("password");
+        if (user == null) {
+            log.info("Invalid confirmation token: {}", token);
+            modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, invalidConfirmationLinkMessage);
+        } else if (user.isEnabled()) {
+            log.info("User is already activated: {}", user.getEmail());
             String createdDateTime = user.getCreatedDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
-            redirectAttr.addFlashAttribute("errorMessage", "User is already enabled." + "\n" + createdDateTime);
-            modelAndView.setViewName(REDIRECT + CONFIRM_VIEW + "?token=" + token);
+            modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, activatedUserMessage + "\n" + createdDateTime);
+        } else {
 
-            return modelAndView;
+            if (isPasswordWeak(password)) {
+                modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, weakPassMessage);
+                modelAndView.setViewName(REDIRECT + CONFIRM_VIEW + "?token=" + token);
+                return modelAndView;
+            }
+
+            user.setPassword(bCryptPasswordEncoder.encode(password));
+            user.setEnabled(true);
+            userService.saveUser(user);
+
+            modelAndView.setViewName(CONFIRM_VIEW);
+            modelAndView.addObject(SUCCESS_MESSAGE_ATTRIBUTE, passSetMessage);
         }
-
-
-        user.setPassword(bCryptPasswordEncoder.encode(password));
-        user.setEnabled(true);
-
-        userService.saveUser(user);
-
-        modelAndView.setViewName(CONFIRM_VIEW);
-        modelAndView.addObject("successMessage", "Your password has been set!");
 
         return modelAndView;
     }
 
+    private boolean isPasswordWeak(String password){
+        Zxcvbn passwordCheck = new Zxcvbn();
+        Strength strength = passwordCheck.measure(password);
+        return strength.getScore() < 3;
+    }
 }

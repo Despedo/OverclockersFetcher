@@ -29,7 +29,7 @@ public class MailServiceImpl implements MailService {
     @Autowired
     private ForumTopicService topicService;
     @Autowired
-    Mailer mailer;
+    private Mailer mailer;
 
     @Value("${search.request}")
     private String searchRequest;
