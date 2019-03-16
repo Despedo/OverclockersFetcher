@@ -3,13 +3,13 @@ package com.overclockers.fetcher.service.impl;
 import com.overclockers.fetcher.entity.ForumUser;
 import com.overclockers.fetcher.repository.ForumUserRepository;
 import com.overclockers.fetcher.service.ForumUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class ForumUserServiceImpl implements ForumUserService {
 
-    @Autowired
     private ForumUserRepository repository;
 
     @Override

@@ -2,7 +2,6 @@ package com.overclockers.fetcher.configuration;
 
 import ch.vorburger.mariadb4j.DBConfigurationBuilder;
 import ch.vorburger.mariadb4j.springframework.MariaDB4jSpringService;
-import com.overclockers.fetcher.controllers.RegisterController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +20,6 @@ import javax.sql.DataSource;
 @PropertySource({"classpath:/application-local.properties"})
 @EnableJpaRepositories("com.overclockers.fetcher.repository")
 public class TestAppConfiguration extends WebMvcConfigurationSupport {
-
-    @Bean
-    public RegisterController registerController() {
-        return new RegisterController();
-    }
 
     @Bean
     MariaDB4jSpringService mariaDB4jSpringService() {

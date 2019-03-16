@@ -3,7 +3,7 @@ package com.overclockers.fetcher.service.impl;
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.repository.ForumTopicRepository;
 import com.overclockers.fetcher.service.ForumTopicService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@AllArgsConstructor
 public class ForumTopicServiceImpl implements ForumTopicService {
 
-    @Autowired
     private ForumTopicRepository repository;
 
     @Override
@@ -21,12 +21,11 @@ public class ForumTopicServiceImpl implements ForumTopicService {
         ForumTopic existing = repository.findTopicByForumId(topic.getTopicForumId());
         if (existing == null) {
             return repository.save(topic);
-        } else if(!existing.equals(topic)){
+        } else if (!existing.equals(topic)) {
             topic.setTopicId(existing.getTopicId());
             topic.setSentToUser(false);
             return repository.save(topic);
-        }
-        else {
+        } else {
             return existing;
         }
     }

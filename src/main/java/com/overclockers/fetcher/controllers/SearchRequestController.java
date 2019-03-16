@@ -6,8 +6,9 @@ import com.overclockers.fetcher.entity.ApplicationUserDetails;
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.service.ApplicationUserService;
 import com.overclockers.fetcher.service.SearchRequestService;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,16 +24,17 @@ import static com.overclockers.fetcher.constants.ControllerConstants.*;
 
 @Controller
 @Log4j2
+@RequiredArgsConstructor
 public class SearchRequestController {
 
     @Value("${no.requests.message}")
-    String noRequestsMessage;
+    private String noRequestsMessage;
 
-    @Autowired
+    @NonNull
     private SearchRequestConverter requestConverter;
-    @Autowired
+    @NonNull
     private SearchRequestService searchRequestService;
-    @Autowired
+    @NonNull
     private ApplicationUserService userService;
 
     @GetMapping(value = {"/"})

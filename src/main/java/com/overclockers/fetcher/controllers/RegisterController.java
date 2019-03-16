@@ -6,8 +6,11 @@ import com.overclockers.fetcher.dto.UserDTO;
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ApplicationUserService;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -29,26 +32,27 @@ import static com.overclockers.fetcher.constants.ControllerConstants.*;
 
 @Controller
 @Log4j2
+@RequiredArgsConstructor
 public class RegisterController {
 
     @Value("${user.registered.message}")
-    String userRegisteredMessage;
+    private String userRegisteredMessage;
     @Value("${email.sent.message}")
-    String emailSentMessage;
+    private String emailSentMessage;
     @Value("${invalid.confirmation.link.message}")
-    String invalidConfirmationLinkMessage;
+    private String invalidConfirmationLinkMessage;
     @Value("${activated.user.message}")
-    String activatedUserMessage;
+    private String activatedUserMessage;
     @Value("${weak.pass.message}")
-    String weakPassMessage;
+    private String weakPassMessage;
     @Value("${pass.set.message}")
-    String passSetMessage;
+    private String passSetMessage;
 
-    @Autowired
+    @NonNull
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Autowired
+    @NonNull
     private ApplicationUserService userService;
-    @Autowired
+    @NonNull
     private MailService mailService;
 
     @GetMapping(value = "/login")
@@ -159,7 +163,7 @@ public class RegisterController {
         return modelAndView;
     }
 
-    private boolean isPasswordWeak(String password){
+    private boolean isPasswordWeak(String password) {
         Zxcvbn passwordCheck = new Zxcvbn();
         Strength strength = passwordCheck.measure(password);
         return strength.getScore() < 3;

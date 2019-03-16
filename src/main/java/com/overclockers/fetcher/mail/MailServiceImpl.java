@@ -3,32 +3,36 @@ package com.overclockers.fetcher.mail;
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.service.ForumTopicService;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.Mailer;
 import org.simplejavamail.springsupport.SimpleJavaMailSpringSupport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @Log4j2
 @Service
 @Import(SimpleJavaMailSpringSupport.class)
+@RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
 
     private static final String SEARCH_REQUEST_EMAIL_SUBJECT = "Topics according to your request";
     private static final String REGISTRATION_EMAIL_SUBJECT = "Registration Confirmation";
     private static final String SENDER_NAME = "Overclockers FS";
 
-    @Autowired
+    @NonNull
     private HtmlRender render;
-    @Autowired
+    @NonNull
     private ForumTopicService topicService;
-    @Autowired
+    @NonNull
     private Mailer mailer;
 
     @Value("${search.request}")

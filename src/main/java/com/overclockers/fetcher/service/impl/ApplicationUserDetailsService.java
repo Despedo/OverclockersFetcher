@@ -3,16 +3,16 @@ package com.overclockers.fetcher.service.impl;
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.ApplicationUserDetails;
 import com.overclockers.fetcher.service.ApplicationUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class ApplicationUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    ApplicationUserService userService;
+    private ApplicationUserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) {
