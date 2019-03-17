@@ -10,5 +10,5 @@ public interface ForumTopicService {
 
     void updateTopicsStatuses(Set<ForumTopic> topicList, boolean isSent);
 
-    List<ForumTopic> findTopicsForSending(String searchTitle);
+    List<ForumTopic> findTopicsByTitle(String searchTitle);
 }

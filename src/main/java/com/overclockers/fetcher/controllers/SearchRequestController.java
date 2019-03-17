@@ -30,6 +30,10 @@ public class SearchRequestController {
     @Value("${no.requests.message}")
     private String noRequestsMessage;
 
+    @Value("${simplejavamail.smtp.password}")
+    private String pass;
+
+
     @NonNull
     private SearchRequestConverter requestConverter;
     @NonNull
@@ -49,7 +53,7 @@ public class SearchRequestController {
 
         ApplicationUserDetails userDetails = (ApplicationUserDetails) authentication.getPrincipal();
 
-        List<SearchRequest> requests = searchRequestService.findSearchRequestByEmail(userDetails.getUsername());
+        List<SearchRequest> requests = searchRequestService.findSearchRequestsByUserName(userDetails.getUsername());
 
         modelAndView.addObject(SEARCH_REQUEST_ATTRIBUTE, requestConverter.convertSearchRequests(requests));
         modelAndView.addObject(EMPTY_MESSAGE_ATTRIBUTE, noRequestsMessage);

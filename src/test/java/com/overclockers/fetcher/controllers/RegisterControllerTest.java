@@ -131,7 +131,7 @@ class RegisterControllerTest {
 
         verify(applicationUserService).findUserByEmail(email);
         verify(applicationUserService, never()).saveUser(any(ApplicationUser.class));
-        verify(mailService, never()).prepareAndSendRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
+        verify(mailService, never()).processRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
     }
 
     @Test
@@ -155,7 +155,7 @@ class RegisterControllerTest {
 
         verify(applicationUserService).findUserByEmail(email);
         verify(applicationUserService).saveUser(any(ApplicationUser.class));
-        verify(mailService).prepareAndSendRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
+        verify(mailService).processRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
     }
 
     @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)

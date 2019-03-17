@@ -15,12 +15,12 @@ public class SearchRequestServiceImpl implements SearchRequestService {
     private SearchRequestRepository repository;
 
     @Override
-    public List<SearchRequest> findSearchRequestByUserId(Long userId) {
+    public List<SearchRequest> findSearchRequestsByUserId(Long userId) {
         return repository.findSearchRequestByUserId(userId);
     }
 
     @Override
-    public List<SearchRequest> findSearchRequestByEmail(String email) {
+    public List<SearchRequest> findSearchRequestsByUserName(String email) {
         return repository.findSearchRequestByUserEmail(email);
     }
 

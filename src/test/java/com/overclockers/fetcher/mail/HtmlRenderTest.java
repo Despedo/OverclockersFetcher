@@ -1,13 +1,12 @@
 package com.overclockers.fetcher.mail;
 
 import com.overclockers.fetcher.entity.ForumTopic;
+import com.overclockers.fetcher.entity.SearchRequest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -22,7 +21,7 @@ class HtmlRenderTest {
                 "UTF-8"
         );
 
-        Set<String> searchList = new HashSet<>(Arrays.asList("1080"));
+        List<SearchRequest> searchRequests = new ArrayList<>(Arrays.asList(SearchRequest.builder().request("1080").build()));
         ForumTopic firstTopic = new ForumTopic();
         firstTopic.setTitle("Продам 5шт MSI GTX 1080ti gaming x");
         firstTopic.setTopicForumId(46554L);
@@ -31,7 +30,7 @@ class HtmlRenderTest {
         secondTopic.setTopicForumId(34545L);
         Set<ForumTopic> topics = new HashSet<>(Arrays.asList(firstTopic, secondTopic));
 
-        String renderedHtml = htmlRender.renderHtmlTextForSearchRequestEmail(searchList, topics);
+        String renderedHtml = htmlRender.renderHtmlTextForSearchRequestEmail(searchRequests, topics);
 
         assertEquals(expectedHtml, renderedHtml);
     }

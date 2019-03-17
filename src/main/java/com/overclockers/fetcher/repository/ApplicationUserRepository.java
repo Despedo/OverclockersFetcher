@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, Long> {
     @Query("FROM ApplicationUser u WHERE u.userId = :userId")
@@ -21,4 +23,7 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
     @Modifying(clearAutomatically = true)
     @Query("UPDATE ApplicationUser u SET u.email = :email WHERE u.userId = :userId")
     ApplicationUser updateUserEmail(@Param("userId") Long userId, @Param("email") String email);
+
+    @Query("FROM ApplicationUser u WHERE u.enabled = true")
+    List<ApplicationUser> findAllEnabledUsers();
 }

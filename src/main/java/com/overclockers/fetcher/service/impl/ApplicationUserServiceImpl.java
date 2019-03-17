@@ -6,6 +6,8 @@ import com.overclockers.fetcher.service.ApplicationUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class ApplicationUserServiceImpl implements ApplicationUserService {
@@ -30,6 +32,11 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     @Override
     public ApplicationUser saveUser(ApplicationUser user) {
         return repository.save(user);
+    }
+
+    @Override
+    public List<ApplicationUser> findAllEnabledUsers() {
+        return repository.findAllEnabledUsers();
     }
 
     @Override

@@ -37,9 +37,10 @@ public class OverclockersFetchingService implements FetchingService {
     private boolean isColdStart = true;
 
     @Override
-    public void saveTopics() {
+    public void fetchAndSaveTopics() {
         String firstPageUrl = HOST_URL + FIRST_PAGE_SELLING_PATH;
 
+        // ToDo implement saving only new topics on cold start
         if (isColdStart) {
             log.info("Fetching cold start");
             int coldStartFetchingSize = 10;

@@ -39,7 +39,7 @@ public class ForumTopicServiceImpl implements ForumTopicService {
     }
 
     @Override
-    public List<ForumTopic> findTopicsForSending(String searchTitle) {
+    public List<ForumTopic> findTopicsByTitle(String searchTitle) {
         return repository.findTopicsForSending(searchTitle);
     }
 }

@@ -5,9 +5,9 @@ import com.overclockers.fetcher.entity.SearchRequest;
 import java.util.List;
 
 public interface SearchRequestService {
-    List<SearchRequest> findSearchRequestByUserId(Long userId);
+    List<SearchRequest> findSearchRequestsByUserId(Long userId);
 
-    List<SearchRequest> findSearchRequestByEmail(String userName);
+    List<SearchRequest> findSearchRequestsByUserName(String userName);
 
     SearchRequest findSearchRequestById(Long requestId);
 

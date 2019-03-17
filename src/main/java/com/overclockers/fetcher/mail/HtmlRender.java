@@ -1,9 +1,11 @@
 package com.overclockers.fetcher.mail;
 
 import com.overclockers.fetcher.entity.ForumTopic;
+import com.overclockers.fetcher.entity.SearchRequest;
 import j2html.tags.DomContent;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 import static com.overclockers.fetcher.constants.OverclockersConstants.HOST_URL;
@@ -15,13 +17,13 @@ public class HtmlRender {
 
     private static final String IMG_URL = "https://imgur.com/RUa4aSe.png";
 
-    public String renderHtmlTextForSearchRequestEmail(Set<String> searchList, Set<ForumTopic> topics) {
+    public String renderHtmlTextForSearchRequestEmail(List<SearchRequest> searchRequests, Set<ForumTopic> topics) {
         return html(
                 body(
                         hr(),
                         img().withSrc(IMG_URL),
                         hr(),
-                        generateTopicsContent(searchList, topics)
+                        generateTopicsContent(searchRequests, topics)
                 )
         ).renderFormatted();
     }
@@ -38,12 +40,12 @@ public class HtmlRender {
         ).renderFormatted();
     }
 
-    private DomContent generateTopicsContent(Set<String> searchSet, Set<ForumTopic> topics) {
-        return each(searchSet, search ->
+    private DomContent generateTopicsContent(List<SearchRequest> searchRequests, Set<ForumTopic> topics) {
+        return each(searchRequests, searchRequest ->
                 p().with(
-                        strong("According to your request: " + search),
-                        iffElse(filter(topics, topic -> topic.getTitle().contains(search)).isEmpty(), li("No results."),
-                                each(filter(topics, topic -> topic.getTitle().contains(search)),
+                        strong("According to your request: " + searchRequest.getRequest()),
+                        iffElse(filter(topics, topic -> topic.getTitle().contains(searchRequest.getRequest())).isEmpty(), li("No results."),
+                                each(filter(topics, topic -> topic.getTitle().contains(searchRequest.getRequest())),
                                         topic -> li(a(topic.getTitle()).withHref(getTopicUrl(topic)))
                                 )
                         )

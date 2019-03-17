@@ -6,8 +6,6 @@ import com.overclockers.fetcher.dto.UserDTO;
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ApplicationUserService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -107,7 +105,7 @@ public class RegisterController {
         userService.saveUser(applicationUser);
 
         String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        mailService.prepareAndSendRegistrationEmail(applicationUser, appUrl);
+        mailService.processRegistrationEmail(applicationUser, appUrl);
     }
 
     @GetMapping(value = "/confirm")

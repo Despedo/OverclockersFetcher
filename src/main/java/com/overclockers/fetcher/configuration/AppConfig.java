@@ -22,7 +22,7 @@ import java.util.Properties;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan({"com.overclockers.fetcher"})
-@PropertySource({"classpath:/fetching.properties", "classpath:/app.properties"})
+@PropertySource({"classpath:/app.properties"})
 @EnableJpaRepositories("com.overclockers.fetcher.repository")
 public class AppConfig implements WebMvcConfigurer {
 
