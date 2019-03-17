@@ -20,14 +20,11 @@ public class ScheduledTask {
     private ApplicationUserService applicationUserService;
     private MailService mailService;
 
-    // Todo change schedule period
-    // By the default the top of every hour of every day.
-//    @Scheduled(cron = "${processing.cron:0 0 * * * *}")
-    @Scheduled(fixedRate = 20000)
+    // By the default scheduled will never fire
+    @Scheduled(cron = "${processing.cron:0 0 5 31 2 ?}")
     public void processTopics() {
-        log.info("Scheduled launching of the fetching service");
+        log.info("Scheduled topics processing");
         overclockersFetchingService.fetchAndSaveTopics();
-        log.info("Scheduled launching of the mail service");
 
         List<ApplicationUser> applicationUsers = applicationUserService.findAllEnabledUsers();
         for (ApplicationUser user : applicationUsers) {
