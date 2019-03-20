@@ -1,7 +1,6 @@
-package com.overclockers.fetcher.service.impl;
+package com.overclockers.fetcher.authrization;
 
 import com.overclockers.fetcher.entity.ApplicationUser;
-import com.overclockers.fetcher.entity.ApplicationUserDetails;
 import com.overclockers.fetcher.service.ApplicationUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

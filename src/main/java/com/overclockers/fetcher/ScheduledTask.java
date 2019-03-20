@@ -20,8 +20,7 @@ public class ScheduledTask {
     private ApplicationUserService applicationUserService;
     private MailService mailService;
 
-    // By the default scheduled will never fire
-    @Scheduled(cron = "${processing.cron:0 0 5 31 2 ?}")
+    @Scheduled(cron = "${processing.cron}")
     public void processTopics() {
         log.info("Scheduled topics processing");
         overclockersFetchingService.fetchAndSaveTopics();

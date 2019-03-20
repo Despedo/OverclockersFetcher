@@ -1,5 +1,6 @@
-package com.overclockers.fetcher.parser;
+package com.overclockers.fetcher.parser.impl;
 
+import com.overclockers.fetcher.parser.ElementParser;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

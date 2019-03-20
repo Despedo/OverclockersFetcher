@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "user_application")
 public class ApplicationUser {
+    // ToDo change is naming, check other fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_application_id")

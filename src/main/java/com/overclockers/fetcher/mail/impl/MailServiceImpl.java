@@ -1,8 +1,9 @@
-package com.overclockers.fetcher.mail;
+package com.overclockers.fetcher.mail.impl;
 
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.entity.SearchRequest;
+import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ForumTopicService;
 import com.overclockers.fetcher.service.SearchRequestService;
 import lombok.AllArgsConstructor;
@@ -15,9 +16,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Log4j2
 @Service
@@ -29,7 +29,7 @@ public class MailServiceImpl implements MailService {
     private static final String REGISTRATION_EMAIL_SUBJECT = "Registration Confirmation";
     private static final String SENDER_NAME = "Overclockers FS";
 
-    private HtmlRender render;
+    private HtmlRenderImpl render;
     private ForumTopicService topicService;
     private Mailer mailer;
     private SearchRequestService requestService;
@@ -39,9 +39,10 @@ public class MailServiceImpl implements MailService {
     public void processUserRequestEmail(ApplicationUser user) {
         List<SearchRequest> searchRequests = requestService.findSearchRequestsByUserId(user.getUserId());
 
-        Set<ForumTopic> topics = new HashSet<>();
+        List<ForumTopic> topics = new ArrayList<>();
         for (SearchRequest searchRequest : searchRequests) {
-            topics.addAll(topicService.findTopicsByTitle(searchRequest.getRequest()));
+            // ToDo implement finding by batch to avoid for
+            topics.addAll(topicService.findTopicsForSending(searchRequest.getRequest(), user.getUserId()));
         }
 
         if (!topics.isEmpty()) {
@@ -54,12 +55,10 @@ public class MailServiceImpl implements MailService {
                     .withHTMLText(htmlText)
                     .buildEmail();
 
-            log.info("Found {} topics by requests for user '{}', sending email.", topics.size(), user.getEmail());
-            log.info("Topics [{}]", topics);
+            log.info("Found '{}' topics by requests '{}' for user '{}'.", topics.size(), searchRequests, user.getEmail());
+            log.info("Sending request email to '{}'", user.getEmail());
             mailer.sendMail(email);
-
-            // Todo chance logic to set sent status only for current user
-            topicService.updateTopicsStatuses(topics, true);
+            topicService.registerSentTopics(topics, user);
         } else {
             log.info("No topics were found by request for user '{}'", user.getEmail());
         }
@@ -77,6 +76,7 @@ public class MailServiceImpl implements MailService {
                 .withHTMLText(htmlText)
                 .buildEmail();
 
+        log.info("Sending registration email to '{}'", user.getEmail());
         mailer.sendMail(email);
     }
 }

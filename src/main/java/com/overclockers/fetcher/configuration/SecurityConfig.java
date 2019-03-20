@@ -1,6 +1,6 @@
 package com.overclockers.fetcher.configuration;
 
-import com.overclockers.fetcher.service.impl.ApplicationUserDetailsService;
+import com.overclockers.fetcher.authrization.ApplicationUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

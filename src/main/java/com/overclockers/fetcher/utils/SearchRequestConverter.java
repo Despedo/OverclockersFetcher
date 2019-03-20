@@ -1,4 +1,4 @@
-package com.overclockers.fetcher;
+package com.overclockers.fetcher.utils;
 
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.dto.SearchRequestDTO;

@@ -20,9 +20,10 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
+//ToDo check transactions
 @EnableTransactionManagement
 @ComponentScan({"com.overclockers.fetcher"})
-@PropertySource({"classpath:/app.properties"})
+
 @EnableJpaRepositories("com.overclockers.fetcher.repository")
 public class AppConfig implements WebMvcConfigurer {
 

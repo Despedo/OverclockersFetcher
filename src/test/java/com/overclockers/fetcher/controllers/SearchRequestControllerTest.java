@@ -1,6 +1,6 @@
 package com.overclockers.fetcher.controllers;
 
-import com.overclockers.fetcher.SearchRequestConverter;
+import com.overclockers.fetcher.utils.SearchRequestConverter;
 import com.overclockers.fetcher.configuration.TestAppConfiguration;
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.service.ApplicationUserService;

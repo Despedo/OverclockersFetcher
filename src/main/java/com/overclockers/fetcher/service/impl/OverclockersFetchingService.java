@@ -2,7 +2,7 @@ package com.overclockers.fetcher.service.impl;
 
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.entity.ForumUser;
-import com.overclockers.fetcher.parser.OverclockersElementParser;
+import com.overclockers.fetcher.parser.impl.OverclockersElementParser;
 import com.overclockers.fetcher.service.FetchingService;
 import com.overclockers.fetcher.service.ForumTopicService;
 import com.overclockers.fetcher.service.ForumUserService;
@@ -42,7 +42,6 @@ public class OverclockersFetchingService implements FetchingService {
     public void fetchAndSaveTopics() {
         String firstPageUrl = HOST_URL + FIRST_PAGE_SELLING_PATH;
 
-        // ToDo implement saving only new topics on cold start
         if (isColdStart) {
             log.info("Fetching cold start");
             int coldStartFetchingSize = 10;

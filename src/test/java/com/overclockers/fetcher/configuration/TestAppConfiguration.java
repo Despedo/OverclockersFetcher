@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableWebMvc
 @ComponentScan({"com.overclockers.fetcher"})
-@PropertySource({"classpath:/application-local.properties"})
+@PropertySource({"classpath:/application.properties"})
 @EnableJpaRepositories("com.overclockers.fetcher.repository")
 public class TestAppConfiguration extends WebMvcConfigurationSupport {
 

@@ -2,6 +2,7 @@ package com.overclockers.fetcher.mail;
 
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.entity.SearchRequest;
+import com.overclockers.fetcher.mail.impl.HtmlRenderImpl;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HtmlRenderTest {
 
-    HtmlRender htmlRender = new HtmlRender();
+    HtmlRender htmlRenderImpl = new HtmlRenderImpl();
 
     @Test
     void renderHtmlTextForSearchRequestEmail() throws IOException {
@@ -28,9 +29,9 @@ class HtmlRenderTest {
         ForumTopic secondTopic = new ForumTopic();
         secondTopic.setTitle("Видеокарта Manli GTX 1080Ti, укр гарантия");
         secondTopic.setTopicForumId(34545L);
-        Set<ForumTopic> topics = new HashSet<>(Arrays.asList(firstTopic, secondTopic));
+        List<ForumTopic> topics = Arrays.asList(firstTopic, secondTopic);
 
-        String renderedHtml = htmlRender.renderHtmlTextForSearchRequestEmail(searchRequests, topics);
+        String renderedHtml = htmlRenderImpl.renderHtmlTextForSearchRequestEmail(searchRequests, topics);
 
         assertEquals(expectedHtml, renderedHtml);
     }
@@ -42,7 +43,7 @@ class HtmlRenderTest {
                 "UTF-8"
         );
 
-        String renderedHtml = htmlRender.renderHtmlTextForRegistrationConfirmation("www.confirmation.com");
+        String renderedHtml = htmlRenderImpl.renderHtmlTextForRegistrationConfirmation("www.confirmation.com");
 
         assertEquals(expectedHtml, renderedHtml);
     }

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "user_forum")
 public class ForumUser {
+    // ToDo change id naming, registered date time (to created) and check other fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_forum_id")
