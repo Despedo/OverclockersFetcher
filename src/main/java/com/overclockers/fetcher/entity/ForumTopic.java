@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "topic")
 public class ForumTopic {
+    // ToDo change id naming, first message date time, delete sentToUser check other fields
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "topic_id", nullable = false, updatable = false)
@@ -27,7 +28,7 @@ public class ForumTopic {
     private String location;
     @Column(name = "title", nullable = false)
     private String title;
-    @Column(name = "forum_id",nullable = false, unique = true)
+    @Column(name = "forum_id", nullable = false, unique = true)
     private Long topicForumId;
     @Column(name = "created_datetime", nullable = false)
     private LocalDateTime createdDateTime;
@@ -38,4 +39,6 @@ public class ForumTopic {
     @Column(name = "sent_to_user")
     @EqualsAndHashCode.Exclude
     private boolean sentToUser;
+    @OneToOne(mappedBy = "forumTopic")
+    private SentTopic sentTopic;
 }

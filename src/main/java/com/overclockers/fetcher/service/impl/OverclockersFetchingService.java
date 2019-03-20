@@ -2,16 +2,18 @@ package com.overclockers.fetcher.service.impl;
 
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.entity.ForumUser;
-import com.overclockers.fetcher.parser.OverclockersElementParser;
+import com.overclockers.fetcher.parser.impl.OverclockersElementParser;
 import com.overclockers.fetcher.service.FetchingService;
 import com.overclockers.fetcher.service.ForumTopicService;
 import com.overclockers.fetcher.service.ForumUserService;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,21 +23,23 @@ import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class OverclockersFetchingService implements FetchingService {
 
     private static final String URL_CONNECTING_ERROR = "Error connecting to the URL";
 
-    @Autowired
-    OverclockersElementParser elementParser;
-    @Autowired
-    ForumTopicService topicService;
-    @Autowired
-    ForumUserService userService;
+    @NonNull
+    private OverclockersElementParser elementParser;
+    @NonNull
+    private ForumTopicService topicService;
+    @NonNull
+    private ForumUserService userService;
 
     private boolean isColdStart = true;
 
+    @Async
     @Override
-    public void saveTopics() {
+    public void fetchAndSaveTopics() {
         String firstPageUrl = HOST_URL + FIRST_PAGE_SELLING_PATH;
 
         if (isColdStart) {

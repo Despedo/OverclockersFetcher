@@ -1,6 +1,6 @@
 package com.overclockers.fetcher.controllers;
 
-import com.overclockers.fetcher.SearchRequestConverter;
+import com.overclockers.fetcher.utils.SearchRequestConverter;
 import com.overclockers.fetcher.configuration.TestAppConfiguration;
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.service.ApplicationUserService;
@@ -82,8 +82,8 @@ class SearchRequestControllerTest {
         initMocks(this);
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void showMainPageTest() throws Exception {
         mockMvc.perform(get("/")
@@ -93,8 +93,8 @@ class SearchRequestControllerTest {
                 .andExpect(view().name(REDIRECT + REQUEST_VIEW));
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void processRequestWithLoggedUserTest() throws Exception {
         mockMvc.perform(post("/request").with(csrf())
@@ -111,8 +111,8 @@ class SearchRequestControllerTest {
         verify(searchRequestService).saveSearchRequest(any(SearchRequest.class));
     }
 
-    @Sql(value = {"classpath:createApplicationUsers.sql", "classpath:createUserRequests.sql"}, executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = {"classpath:sql/createApplicationUsers.sql", "classpath:sql/createUserRequests.sql"}, executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void showRequestsTest() throws Exception {
         mockMvc.perform(get("/request")
@@ -125,8 +125,8 @@ class SearchRequestControllerTest {
         verify(requestConverter).convertSearchRequests(anyList());
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void processEmptyRequestTest() throws Exception {
         setupLogger(SearchRequestController.class, Level.INFO);
@@ -146,8 +146,8 @@ class SearchRequestControllerTest {
         verifyLoggerMessages("Search request is empty");
     }
 
-    @Sql(value = {"classpath:createApplicationUsers.sql", "classpath:createUserRequests.sql"}, executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = {"classpath:sql/createApplicationUsers.sql", "classpath:sql/createUserRequests.sql"}, executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void removeRequestTest() throws Exception {
         mockMvc.perform(get("/request/remove/1")

@@ -108,8 +108,8 @@ class RegisterControllerTest {
                 .andExpect(model().attributeHasFieldErrors(USER_ATTRIBUTE, EMAIL_FIELD));
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void processRegistrationFormWithExistingUserTest() throws Exception {
         String firstName = "Nick";
@@ -131,7 +131,7 @@ class RegisterControllerTest {
 
         verify(applicationUserService).findUserByEmail(email);
         verify(applicationUserService, never()).saveUser(any(ApplicationUser.class));
-        verify(mailService, never()).prepareAndSendRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
+        verify(mailService, never()).processRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
     }
 
     @Test
@@ -155,11 +155,11 @@ class RegisterControllerTest {
 
         verify(applicationUserService).findUserByEmail(email);
         verify(applicationUserService).saveUser(any(ApplicationUser.class));
-        verify(mailService).prepareAndSendRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
+        verify(mailService).processRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void showConfirmationPageForActivatedUserTest() throws Exception {
         String token = "7cf9437b-15c3-4705-8923-6a68a3894032";
@@ -186,8 +186,8 @@ class RegisterControllerTest {
         verify(applicationUserService).findUserByConfirmationToken(token);
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void showConfirmationPageForNotActivatedUserTest() throws Exception {
         String token = "5f899c89-0989-9080-0979-0-98a098c787";
@@ -202,8 +202,8 @@ class RegisterControllerTest {
     }
 
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void processConfirmationPageForActivatedUserTest() throws Exception {
         String token = "7cf9437b-15c3-4705-8923-6a68a3894032";
@@ -218,8 +218,8 @@ class RegisterControllerTest {
         verify(applicationUserService, never()).saveUser(any(ApplicationUser.class));
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void processConfirmationPageWithWrongTokenTest() throws Exception {
         String token = "7cf9437b-15c3-4705-8923-6a68a3894562";
@@ -234,8 +234,8 @@ class RegisterControllerTest {
         verify(applicationUserService, never()).saveUser(any(ApplicationUser.class));
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void processConfirmationFormForNotActivatedUserTest() throws Exception {
         String token = "5f899c89-0989-9080-0979-0-98a098c787";
@@ -254,8 +254,8 @@ class RegisterControllerTest {
         verify(applicationUserService).saveUser(any(ApplicationUser.class));
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void processConfirmationFormWithWeakPassTest() throws Exception {
         String token = "5f899c89-0989-9080-0979-0-98a098c787";

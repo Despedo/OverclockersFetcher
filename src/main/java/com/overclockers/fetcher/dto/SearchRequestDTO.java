@@ -1,11 +1,11 @@
-package com.overclockers.fetcher.entity;
+package com.overclockers.fetcher.dto;
 
 import lombok.*;
 
 @Getter
 @Setter
 @Builder
-public class SearchRequestTemplate {
+public class SearchRequestDTO {
     private Long requestId;
     private String request;
     private String createdDateTime;

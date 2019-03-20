@@ -3,24 +3,24 @@ package com.overclockers.fetcher.service.impl;
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.repository.SearchRequestRepository;
 import com.overclockers.fetcher.service.SearchRequestService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class SearchRequestServiceImpl implements SearchRequestService {
 
-    @Autowired
     private SearchRequestRepository repository;
 
     @Override
-    public List<SearchRequest> findSearchRequestByUserId(Long userId) {
+    public List<SearchRequest> findSearchRequestsByUserId(Long userId) {
         return repository.findSearchRequestByUserId(userId);
     }
 
     @Override
-    public List<SearchRequest> findSearchRequestByEmail(String email) {
+    public List<SearchRequest> findSearchRequestsByUserName(String email) {
         return repository.findSearchRequestByUserEmail(email);
     }
 

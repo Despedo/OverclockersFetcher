@@ -1,14 +1,14 @@
 package com.overclockers.fetcher.service;
 
+import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.ForumTopic;
 
 import java.util.List;
-import java.util.Set;
 
 public interface ForumTopicService {
     ForumTopic saveOrUpdateTopic(ForumTopic topic);
 
-    void updateTopicsStatuses(Set<ForumTopic> topicList, boolean isSent);
+    void registerSentTopics(List<ForumTopic> forumTopics, ApplicationUser applicationUser);
 
-    List<ForumTopic> findTopicsForSending(String searchTitle);
+    List<ForumTopic> findTopicsForSending(String searchTitle, Long userId);
 }

@@ -3,13 +3,15 @@ package com.overclockers.fetcher.service.impl;
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.repository.ApplicationUserRepository;
 import com.overclockers.fetcher.service.ApplicationUserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
+@AllArgsConstructor
 public class ApplicationUserServiceImpl implements ApplicationUserService {
 
-    @Autowired
     private ApplicationUserRepository repository;
 
     @Override
@@ -30,6 +32,11 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     @Override
     public ApplicationUser saveUser(ApplicationUser user) {
         return repository.save(user);
+    }
+
+    @Override
+    public List<ApplicationUser> findAllEnabledUsers() {
+        return repository.findAllEnabledUsers();
     }
 
     @Override

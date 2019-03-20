@@ -1,5 +1,6 @@
-package com.overclockers.fetcher.entity;
+package com.overclockers.fetcher.authrization;
 
+import com.overclockers.fetcher.entity.ApplicationUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+//ToDo check is it possible to move user details to ApplicationUser or to other package
 public class ApplicationUserDetails implements UserDetails {
 
     transient ApplicationUser user;

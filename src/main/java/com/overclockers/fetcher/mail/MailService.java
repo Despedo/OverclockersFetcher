@@ -3,7 +3,7 @@ package com.overclockers.fetcher.mail;
 import com.overclockers.fetcher.entity.ApplicationUser;
 
 public interface MailService {
-    void prepareAndSendSearchResults();
+    void processUserRequestEmail(ApplicationUser user);
 
-    void prepareAndSendRegistrationEmail(ApplicationUser user, String appUrl);
+    void processRegistrationEmail(ApplicationUser user, String appUrl);
 }

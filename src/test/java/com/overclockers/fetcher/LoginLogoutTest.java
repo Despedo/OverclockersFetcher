@@ -50,8 +50,8 @@ public class LoginLogoutTest {
         initMocks(this);
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void loginTest() throws Exception {
         mockMvc.perform(formLogin().user(TEST_USER_EMAIL).password(TEST_USER_PASS))
@@ -60,8 +60,8 @@ public class LoginLogoutTest {
                 .andExpect(authenticated().withUsername(TEST_USER_EMAIL));
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void loginWithWrongPassTest() throws Exception {
         mockMvc.perform(formLogin().user(TEST_USER_EMAIL).password("wrong"))
@@ -70,8 +70,8 @@ public class LoginLogoutTest {
                 .andExpect(unauthenticated());
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void loginWithDisabledUserTest() throws Exception {
         mockMvc.perform(formLogin().user(DISABLED_TEST_USER_EMAIL).password(DISABLED_TEST_USER_PASS))
@@ -80,8 +80,8 @@ public class LoginLogoutTest {
                 .andExpect(unauthenticated());
     }
 
-    @Sql(value = "classpath:createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
-    @Sql(value = "classpath:clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
     @Test
     void logoutTest() throws Exception {
         mockMvc.perform(post("/logout").with(csrf())

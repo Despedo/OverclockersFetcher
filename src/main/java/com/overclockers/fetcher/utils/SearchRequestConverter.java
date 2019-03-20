@@ -1,7 +1,7 @@
-package com.overclockers.fetcher;
+package com.overclockers.fetcher.utils;
 
 import com.overclockers.fetcher.entity.SearchRequest;
-import com.overclockers.fetcher.entity.SearchRequestTemplate;
+import com.overclockers.fetcher.dto.SearchRequestDTO;
 import org.springframework.stereotype.Component;
 
 import java.time.format.DateTimeFormatter;
@@ -12,16 +12,16 @@ public class SearchRequestConverter {
 
     private static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
 
-    public List<SearchRequestTemplate> convertSearchRequests(List<SearchRequest> searchRequests) {
-        List<SearchRequestTemplate> templates = new ArrayList<>(searchRequests.size());
+    public List<SearchRequestDTO> convertSearchRequests(List<SearchRequest> searchRequests) {
+        List<SearchRequestDTO> templates = new ArrayList<>(searchRequests.size());
         searchRequests.sort(Comparator.comparing(SearchRequest :: getCreatedDateTime).reversed());
         searchRequests.forEach(searchRequest -> templates.add(convert(searchRequest)));
         return templates;
     }
 
-    private SearchRequestTemplate convert(SearchRequest searchRequest) {
+    private SearchRequestDTO convert(SearchRequest searchRequest) {
         String createdDateTime = searchRequest.getCreatedDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
-        return SearchRequestTemplate.builder().
+        return SearchRequestDTO.builder().
                 requestId(searchRequest.getRequestId()).
                 request(searchRequest.getRequest()).
                 createdDateTime(createdDateTime).
