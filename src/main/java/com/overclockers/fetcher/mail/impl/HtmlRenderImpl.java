@@ -44,14 +44,13 @@ public class HtmlRenderImpl implements HtmlRender {
 
     private DomContent generateTopicsContent(List<SearchRequest> searchRequests, List<ForumTopic> topics) {
         return each(searchRequests, searchRequest ->
-                p().with(
-                        strong("According to your request: " + searchRequest.getRequest()),
-                        iffElse(filter(topics, topic -> topic.getTitle().contains(searchRequest.getRequest())).isEmpty(), li("No results."),
-                                each(filter(topics, topic -> topic.getTitle().contains(searchRequest.getRequest())),
+                iff(!filter(topics, topic -> topic.getTitle().toLowerCase().contains(searchRequest.getRequest().toLowerCase())).isEmpty(),
+                        p(
+                                strong("According to your request: " + searchRequest.getRequest()),
+                                each(filter(topics, topic -> topic.getTitle().toLowerCase().contains(searchRequest.getRequest().toLowerCase())),
                                         topic -> li(a(topic.getTitle()).withHref(getTopicUrl(topic)))
                                 )
-                        )
-                )
+                        ).with())
         );
     }
 

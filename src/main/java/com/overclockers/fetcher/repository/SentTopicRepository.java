@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface SentTopicRepository extends JpaRepository<SentTopic, Long> {
-    @Query("FROM SentTopic t WHERE t.applicationUser = :applicationUserId")
-    List<SentTopic> findSentTopicsByApplicationUserUd(@Param("applicationUserId") Long applicationUserId);
+    @Query("FROM SentTopic t WHERE t.applicationUser = :userId")
+    List<SentTopic> findSentTopicsByApplicationUserId(@Param("userId") Long userId);
 }

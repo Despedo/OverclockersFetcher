@@ -21,7 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
@@ -72,13 +73,13 @@ public class RegisterController {
         modelAndView.setViewName(REGISTER_VIEW);
 
         if (bindingResult.hasFieldErrors()) {
-            log.info("User validation error: {}", user);
+            log.info("User validation error: {}", user.getEmail());
             modelAndView.addObject(USER_ATTRIBUTE, user);
         } else {
             // Lookup user in database by e-mail
             ApplicationUser existingUser = userService.findUserByEmail(user.getEmail());
             if (existingUser != null) {
-                log.info("User already exists: {}", existingUser);
+                log.info("User already exists: {}", existingUser.getEmail());
                 modelAndView.addObject(USER_ATTRIBUTE, user);
                 modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, userRegisteredMessage);
                 bindingResult.reject("email");
@@ -99,7 +100,7 @@ public class RegisterController {
                 .lastName(user.getLastName())
                 .enabled(false)
                 .confirmationToken(UUID.randomUUID().toString())
-                .createdDateTime(LocalDateTime.now())
+                .createdDateTime(ZonedDateTime.now(ZoneId.of("UTC")))
                 .build();
 
         userService.saveUser(applicationUser);

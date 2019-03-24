@@ -17,7 +17,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
@@ -37,7 +39,8 @@ public class OverclockersFetchingService implements FetchingService {
 
     private boolean isColdStart = true;
 
-    @Async
+    //ToDo add sync to this method
+    @Async("threadPoolTaskExecutor")
     @Override
     public void fetchAndSaveTopics() {
         String firstPageUrl = HOST_URL + FIRST_PAGE_SELLING_PATH;
@@ -64,10 +67,11 @@ public class OverclockersFetchingService implements FetchingService {
     }
 
     private void savePage(String url) {
-        Document document = getDocumentFromUrl(url);
-        Elements elements = elementParser.getPageTopicElements(document);
+        //ToDO fetch topics by id on cold start
+        Document pageDocument = getDocumentFromUrl(url);
+        Elements topicElements = elementParser.getPageTopicElements(pageDocument);
 
-        for (Element element : elements) {
+        for (Element element : topicElements) {
             ForumUser user = getUser(element);
             ForumUser savedUser = userService.saveUser(user);
 
@@ -94,24 +98,23 @@ public class OverclockersFetchingService implements FetchingService {
         String title = elementParser.getTopicTitle(element);
         String forumId = elementParser.getTopicForumId(element);
         String link = elementParser.getTopicLink(element);
-        LocalDateTime lastMessageDateTime = elementParser.getLastMessageDateTime(element);
 
-        Document document = getDocumentFromUrl(link);
-        LocalDateTime createdDateTime = getFirstMessageDateTime(document);
-        LocalDateTime updatedDateTime = getUpdatedDateTime(document);
+        Document topicDocument = getDocumentFromUrl(link);
+        ZonedDateTime createdDateTime = getFirstMessageDateTime(topicDocument);
+        ZonedDateTime updatedDateTime = getUpdatedDateTime(topicDocument);
 
         return ForumTopic.builder()
                 .location(location)
                 .title(title)
                 .topicForumId(Long.valueOf(forumId))
-                .createdDateTime(createdDateTime)
-                .updatedDateTime(updatedDateTime)
-                .lastMessageDateTime(lastMessageDateTime)
+                .topicCreatedDateTime(createdDateTime)
+                .topicUpdatedDateTime(updatedDateTime)
+                .createdDateTime(ZonedDateTime.now(ZoneId.of("UTC")))
                 .build();
     }
 
-    private LocalDateTime getUpdatedDateTime(Document document) {
-        LocalDateTime updatedDateTime;
+    private ZonedDateTime getUpdatedDateTime(Document document) {
+        ZonedDateTime updatedDateTime;
         Elements noticeElements = document.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_NOTICE_VALUE);
         if (!noticeElements.isEmpty()) {
             Element noticeEditedElement = noticeElements.first();
@@ -122,7 +125,7 @@ public class OverclockersFetchingService implements FetchingService {
         return updatedDateTime;
     }
 
-    private LocalDateTime getFirstMessageDateTime(Document document) {
+    private ZonedDateTime getFirstMessageDateTime(Document document) {
         Elements authorElements = document.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
         Element firstMessageElement = authorElements.select("p").first();
         return elementParser.getDateTime(firstMessageElement);
@@ -131,12 +134,11 @@ public class OverclockersFetchingService implements FetchingService {
     private ForumUser getUser(Element element) {
         String username = elementParser.getAuthorUsername(element);
         String forumId = elementParser.getAuthorProfileForumId(element);
-        LocalDateTime registeredDateTime = LocalDateTime.now();
 
         return ForumUser.builder()
-                .username(username)
+                .nickname(username)
                 .userForumId(Long.valueOf(forumId))
-                .registeredDateTime(registeredDateTime)
+                .createdDateTime(ZonedDateTime.now(ZoneId.of("UTC")))
                 .build();
     }
 

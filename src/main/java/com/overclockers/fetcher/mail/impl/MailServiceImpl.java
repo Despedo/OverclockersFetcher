@@ -34,15 +34,15 @@ public class MailServiceImpl implements MailService {
     private Mailer mailer;
     private SearchRequestService requestService;
 
-    @Async
+    @Async("threadPoolTaskExecutor")
     @Override
     public void processUserRequestEmail(ApplicationUser user) {
-        List<SearchRequest> searchRequests = requestService.findSearchRequestsByUserId(user.getUserId());
+        List<SearchRequest> searchRequests = requestService.findSearchRequestsByUserId(user.getId());
 
         List<ForumTopic> topics = new ArrayList<>();
         for (SearchRequest searchRequest : searchRequests) {
             // ToDo implement finding by batch to avoid for
-            topics.addAll(topicService.findTopicsForSending(searchRequest.getRequest(), user.getUserId()));
+            topics.addAll(topicService.findTopicsForSending(searchRequest.getRequest(), user.getId()));
         }
 
         if (!topics.isEmpty()) {
@@ -56,7 +56,7 @@ public class MailServiceImpl implements MailService {
                     .buildEmail();
 
             log.info("Found '{}' topics by requests '{}' for user '{}'.", topics.size(), searchRequests, user.getEmail());
-            log.info("Sending request email to '{}'", user.getEmail());
+            log.info("Sending email to '{}'", user.getEmail());
             mailer.sendMail(email);
             topicService.registerSentTopics(topics, user);
         } else {

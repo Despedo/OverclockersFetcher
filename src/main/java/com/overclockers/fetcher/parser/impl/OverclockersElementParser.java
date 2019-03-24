@@ -8,6 +8,9 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,10 +38,6 @@ public class OverclockersElementParser implements ElementParser {
         int start = href.indexOf(USER_PROFILE_DELIMITER) + USER_PROFILE_DELIMITER.length();
         int end = href.indexOf(SID_DELIMITER);
         return href.substring(start, end);
-    }
-
-    private String getUserProfileLink(String href) {
-        return HOST_URL + USER_PROFILE_PATH + getUserProfileForumId(href);
     }
 
     private String getTopicForumId(String href) {
@@ -84,31 +83,8 @@ public class OverclockersElementParser implements ElementParser {
         return getTopicLink(topicHref);
     }
 
-    @Override
-    public LocalDateTime getLastMessageDateTime(Element element) {
-        Element lastMessageElement = element.getElementsByAttributeValue(ELEMENT_TOPIC_KEY, ELEMENT_LAST_MESSAGE_VALUE).first();
-        String lastMessageDateTime = lastMessageElement.text();
-        boolean isDateTimeValid = lastMessageDateTime.matches("^\\d{2}[.]\\d{2}[.]\\d{4}\\s\\d{2}[:]\\d{2}$");
-        if (!isDateTimeValid) {
-            log.error(DATE_TIME_FORMAT_ERROR + ": {}", lastMessageDateTime);
-            throw new IllegalArgumentException(DATE_TIME_FORMAT_ERROR);
-        }
-
-        return parseLocalDateTime(lastMessageDateTime);
-    }
-
     public Elements getPageTopicElements(Document document) {
         return document.getElementsByAttributeValueMatching(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_VALUE_REGEXP);
-    }
-
-    private LocalDateTime parseLocalDateTime(String lastMessageDateTime) {
-        int dayOfMonth = Integer.parseInt(lastMessageDateTime.substring(0, 2));
-        int month = Integer.parseInt(lastMessageDateTime.substring(3, 5));
-        int year = Integer.parseInt(lastMessageDateTime.substring(6, 10));
-        int hour = Integer.parseInt(lastMessageDateTime.substring(11, 13));
-        int minute = Integer.parseInt(lastMessageDateTime.substring(14, 16));
-
-        return LocalDateTime.of(year, month, dayOfMonth, hour, minute);
     }
 
     @Override
@@ -124,14 +100,7 @@ public class OverclockersElementParser implements ElementParser {
         return getUserProfileForumId(profileHref);
     }
 
-    @Override
-    public String getAuthorProfileLink(Element element) {
-        Elements authorElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
-        String profileHref = authorElements.select(A_TAG).attr(HREF_ATTRIBUTE);
-        return getUserProfileLink(profileHref);
-    }
-
-    public LocalDateTime getDateTime(Element element) {
+    public ZonedDateTime getDateTime(Element element) {
         Pattern dateTimePattern = Pattern.compile("(" + DATE_TIME_REGEXP + ")");
         Matcher dateTimeMatcher = dateTimePattern.matcher(element.text());
 
@@ -144,6 +113,12 @@ public class OverclockersElementParser implements ElementParser {
             log.error(DATE_TIME_FORMAT_ERROR + ": {}", messageDateTime);
             throw new IllegalArgumentException(DATE_TIME_FORMAT_ERROR);
         }
-        return LocalDateTime.parse(messageDateTime, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
+
+        return convertToZonedUtc(LocalDateTime.parse(messageDateTime, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
+    }
+
+    private ZonedDateTime convertToZonedUtc(LocalDateTime localDateTime){
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/Helsinki"));
+        return zonedDateTime.withZoneSameInstant(ZoneId.of("UTC"));
     }
 }

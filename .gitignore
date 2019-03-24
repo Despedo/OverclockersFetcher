@@ -1,8 +1,6 @@
-logs
+log
 target
 .idea
 .iml
 /*.iml
 /*.txt
-/log/*.log
-/log/*.gz

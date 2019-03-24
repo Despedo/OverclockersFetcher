@@ -3,7 +3,7 @@ package com.overclockers.fetcher.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -16,13 +16,13 @@ public class SentTopic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long sentTopicId;
+    private Long id;
     @OneToOne
-    @JoinColumn(name = "application_user_id", referencedColumnName = "user_application_id", nullable = false)
+    @JoinColumn(name = "application_user_id", referencedColumnName = "id", nullable = false)
     private ApplicationUser applicationUser;
     @OneToOne
-    @JoinColumn(name = "topic_id", referencedColumnName = "topic_id", nullable = false)
+    @JoinColumn(name = "topic_id", referencedColumnName = "id", nullable = false)
     private ForumTopic forumTopic;
     @Column(name = "created_datetime", nullable = false)
-    private LocalDateTime createdDatetime;
+    private ZonedDateTime createdDatetime;
 }

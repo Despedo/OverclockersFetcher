@@ -16,7 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -78,7 +79,7 @@ public class SearchRequestController {
             if (loggedUser != null && loggedUser.isEnabled()) {
                 SearchRequest request = SearchRequest.builder()
                         .request(searchRequest)
-                        .createdDateTime(LocalDateTime.now())
+                        .createdDateTime(ZonedDateTime.now(ZoneId.of("UTC")))
                         .user(loggedUser)
                         .build();
 

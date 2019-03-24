@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, Long> {
-    @Query("FROM ApplicationUser u WHERE u.userId = :userId")
+    @Query("FROM ApplicationUser u WHERE u.id = :userId")
     ApplicationUser findUserById(@Param("userId") Long userId);
 
     @Query("FROM ApplicationUser u WHERE u.email = :email")
@@ -21,7 +21,7 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
     ApplicationUser findUserByConfirmationToken(@Param("confirmationToken") String confirmationToken);
 
     @Modifying(clearAutomatically = true)
-    @Query("UPDATE ApplicationUser u SET u.email = :email WHERE u.userId = :userId")
+    @Query("UPDATE ApplicationUser u SET u.email = :email WHERE u.id = :userId")
     ApplicationUser updateUserEmail(@Param("userId") Long userId, @Param("email") String email);
 
     @Query("FROM ApplicationUser u WHERE u.enabled = true")

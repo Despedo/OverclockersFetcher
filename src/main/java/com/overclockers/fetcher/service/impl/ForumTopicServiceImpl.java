@@ -10,7 +10,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public class ForumTopicServiceImpl implements ForumTopicService {
         if (existing == null) {
             return forumTopicRepository.save(topic);
         } else if (!existing.equals(topic)) {
-            topic.setTopicId(existing.getTopicId());
+            topic.setId(existing.getId());
             //Todo change to only saving, we need to save new topic instead updating to avoid issues when topic was sent to user
             return forumTopicRepository.save(topic);
         } else {
@@ -44,7 +45,7 @@ public class ForumTopicServiceImpl implements ForumTopicService {
             sentTopics.add(SentTopic.builder()
                     .applicationUser(applicationUser)
                     .forumTopic(topic)
-                    .createdDatetime(LocalDateTime.now())
+                    .createdDatetime(ZonedDateTime.now(ZoneId.of("UTC")))
                     .build());
         }
         sentTopicRepository.saveAll(sentTopics);

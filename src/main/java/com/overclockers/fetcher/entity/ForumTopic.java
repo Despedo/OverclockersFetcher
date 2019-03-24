@@ -3,7 +3,7 @@ package com.overclockers.fetcher.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "topic")
 public class ForumTopic {
-    // ToDo change id naming, first message date time, delete sentToUser check other fields
+    //ToDo implement storing updated_datetime
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "topic_id", nullable = false, updatable = false)
+    @Column(name = "id", nullable = false, updatable = false)
     @EqualsAndHashCode.Exclude
-    private Long topicId;
+    private Long id;
     @JoinColumn(name = "user_forum_id")
     @ManyToOne(targetEntity = ForumUser.class)
     private ForumUser user;
@@ -30,15 +30,14 @@ public class ForumTopic {
     private String title;
     @Column(name = "forum_id", nullable = false, unique = true)
     private Long topicForumId;
+    @Column(name = "topic_created_datetime", nullable = false)
+    private ZonedDateTime topicCreatedDateTime;
+    @Column(name = "topic_updated_datetime")
+    private ZonedDateTime topicUpdatedDateTime;
     @Column(name = "created_datetime", nullable = false)
-    private LocalDateTime createdDateTime;
+    private ZonedDateTime createdDateTime;
     @Column(name = "updated_datetime")
-    private LocalDateTime updatedDateTime;
-    @Column(name = "last_message_datetime", nullable = false)
-    private LocalDateTime lastMessageDateTime;
-    @Column(name = "sent_to_user")
-    @EqualsAndHashCode.Exclude
-    private boolean sentToUser;
+    private ZonedDateTime updatedDateTime;
     @OneToOne(mappedBy = "forumTopic")
     private SentTopic sentTopic;
 }
