@@ -10,10 +10,10 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.overclockers.fetcher.utils.DateTimeUtil.getCurrentTime;
 
 @Service
 @AllArgsConstructor
@@ -45,7 +45,7 @@ public class ForumTopicServiceImpl implements ForumTopicService {
             sentTopics.add(SentTopic.builder()
                     .applicationUser(applicationUser)
                     .forumTopic(topic)
-                    .createdDatetime(ZonedDateTime.now(ZoneId.of("UTC")))
+                    .createdDatetime(getCurrentTime())
                     .build());
         }
         sentTopicRepository.saveAll(sentTopics);

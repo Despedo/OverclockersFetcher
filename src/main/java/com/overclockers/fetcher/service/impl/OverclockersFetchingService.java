@@ -18,10 +18,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import static com.overclockers.fetcher.constants.OverclockersConstants.*;
+import static com.overclockers.fetcher.utils.DateTimeUtil.getCurrentTime;
 
 @Log4j2
 @Service
@@ -46,24 +45,34 @@ public class OverclockersFetchingService implements FetchingService {
         String firstPageUrl = HOST_URL + FIRST_PAGE_SELLING_PATH;
 
         if (isColdStart) {
-            log.info("Fetching cold start");
-            int coldStartFetchingSize = 10;
-            int nextPage = 0;
-            for (int i = 0; i < coldStartFetchingSize; i++) {
-                if (i == 0) {
-                    savePage(firstPageUrl);
-                } else {
-                    String nextPageUrl = firstPageUrl + "&start=" + nextPage;
-                    int nextPageShift = 40;
-                    nextPage += nextPageShift;
-                    savePage(nextPageUrl);
-                }
-            }
-            log.info("Fetching cold start finished");
-            isColdStart = false;
+            fetchingColdStart(firstPageUrl);
         } else {
-            savePage(firstPageUrl);
+            fetchingHotStart(firstPageUrl);
         }
+    }
+
+    private void fetchingHotStart(String firstPageUrl) {
+        log.info("Fetching hot start");
+        savePage(firstPageUrl);
+        log.info("Fetching hot start finished");
+    }
+
+    private void fetchingColdStart(String firstPageUrl) {
+        log.info("Fetching cold start");
+        int coldStartFetchingSize = 10;
+        int nextPage = 0;
+        for (int i = 0; i < coldStartFetchingSize; i++) {
+            if (i == 0) {
+                savePage(firstPageUrl);
+            } else {
+                String nextPageUrl = firstPageUrl + "&start=" + nextPage;
+                int nextPageShift = 40;
+                nextPage += nextPageShift;
+                savePage(nextPageUrl);
+            }
+        }
+        isColdStart = false;
+        log.info("Fetching cold start finished");
     }
 
     private void savePage(String url) {
@@ -109,7 +118,7 @@ public class OverclockersFetchingService implements FetchingService {
                 .topicForumId(Long.valueOf(forumId))
                 .topicCreatedDateTime(createdDateTime)
                 .topicUpdatedDateTime(updatedDateTime)
-                .createdDateTime(ZonedDateTime.now(ZoneId.of("UTC")))
+                .createdDateTime(getCurrentTime())
                 .build();
     }
 
@@ -138,7 +147,7 @@ public class OverclockersFetchingService implements FetchingService {
         return ForumUser.builder()
                 .nickname(username)
                 .userForumId(Long.valueOf(forumId))
-                .createdDateTime(ZonedDateTime.now(ZoneId.of("UTC")))
+                .createdDateTime(getCurrentTime())
                 .build();
     }
 

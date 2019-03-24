@@ -21,13 +21,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.UUID;
 
 import static com.overclockers.fetcher.constants.ControllerConstants.*;
+import static com.overclockers.fetcher.utils.DateTimeUtil.getCurrentTime;
 
 @Controller
 @Log4j2
@@ -100,7 +99,7 @@ public class RegisterController {
                 .lastName(user.getLastName())
                 .enabled(false)
                 .confirmationToken(UUID.randomUUID().toString())
-                .createdDateTime(ZonedDateTime.now(ZoneId.of("UTC")))
+                .createdDateTime(getCurrentTime())
                 .build();
 
         userService.saveUser(applicationUser);
