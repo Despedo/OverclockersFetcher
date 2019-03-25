@@ -23,8 +23,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 import static com.overclockers.fetcher.Utils.buildUrlEncodedFormEntity;
 import static com.overclockers.fetcher.constants.ControllerConstants.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -154,8 +153,7 @@ class RegisterControllerTest {
                 .andExpect(model().attributeHasNoErrors(USER_ATTRIBUTE));
 
         verify(applicationUserService).findUserByEmail(email);
-        verify(applicationUserService).saveUser(any(ApplicationUser.class));
-        verify(mailService).processRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
+        verify(applicationUserService).registerUser(email, firstName, lastName, "http://localhost:80");
     }
 
     @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
@@ -251,7 +249,7 @@ class RegisterControllerTest {
 
         verify(applicationUserService).findUserByConfirmationToken(token);
         verify(bCryptPasswordEncoder).encode(password);
-        verify(applicationUserService).saveUser(any(ApplicationUser.class));
+        verify(applicationUserService).activateUser(any(ApplicationUser.class), anyString());
     }
 
     @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)

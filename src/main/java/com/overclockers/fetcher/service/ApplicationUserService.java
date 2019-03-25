@@ -16,4 +16,8 @@ public interface ApplicationUserService {
     List<ApplicationUser> findAllEnabledUsers();
 
     void updateUserEmail(Long userId, String email);
+
+    void activateUser(ApplicationUser user, String password);
+
+    ApplicationUser registerUser(String email, String firstName, String lastName, String registrationUrl);
 }

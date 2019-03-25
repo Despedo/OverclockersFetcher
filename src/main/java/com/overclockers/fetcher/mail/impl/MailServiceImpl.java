@@ -65,6 +65,7 @@ public class MailServiceImpl implements MailService {
         }
     }
 
+    @Async("threadPoolTaskExecutor")
     @Override
     public void processRegistrationEmail(ApplicationUser user, String appUrl) {
 
