@@ -133,6 +133,7 @@ public class RegisterController {
         String password = requestParams.get("password");
         String token = requestParams.get("token");
 
+        //ToDo implement storing activation datetime
         ApplicationUser user = userService.findUserByConfirmationToken(token);
 
         if (user == null) {

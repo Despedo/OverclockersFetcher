@@ -16,7 +16,6 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @Table(name = "user_application")
 public class ApplicationUser {
-    //ToDo implement activated
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

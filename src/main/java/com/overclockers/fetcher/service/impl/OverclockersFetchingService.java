@@ -83,6 +83,7 @@ public class OverclockersFetchingService implements FetchingService {
 
             ForumTopic topic = getTopic(element);
             topic.setUser(savedUser);
+            //ToDo implement storing updated datetime
             topicService.saveOrUpdateTopic(topic);
         }
 

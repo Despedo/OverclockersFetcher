@@ -42,6 +42,7 @@ public class MailServiceImpl implements MailService {
         List<ForumTopic> topics = new ArrayList<>();
         for (SearchRequest searchRequest : searchRequests) {
             // ToDo implement finding by batch to avoid for
+            // ToDo implement space gaps variations ('rx580' = 'rx 580', 'ddr3' = 'ddr 3' = 'ddr3' = 'ddr_3')
             topics.addAll(topicService.findTopicsForSending(searchRequest.getRequest(), user.getId()));
         }
 
