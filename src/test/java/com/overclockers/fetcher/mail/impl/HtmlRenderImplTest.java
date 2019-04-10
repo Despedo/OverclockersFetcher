@@ -1,8 +1,8 @@
-package com.overclockers.fetcher.mail;
+package com.overclockers.fetcher.mail.impl;
 
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.entity.SearchRequest;
-import com.overclockers.fetcher.mail.impl.HtmlRenderImpl;
+import com.overclockers.fetcher.mail.HtmlRender;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -11,12 +11,12 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class HtmlRenderTest {
+class HtmlRenderImplTest {
 
-    HtmlRender htmlRenderImpl = new HtmlRenderImpl();
+    HtmlRender htmlRender = new HtmlRenderImpl();
 
     @Test
-    void renderHtmlTextForSearchRequestEmail() throws IOException {
+    void renderHtmlTextForSearchRequestEmailTest() throws IOException {
         String expectedHtml = IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("mail/searchRequestEmail.html"),
                 "UTF-8"
@@ -31,19 +31,19 @@ class HtmlRenderTest {
         secondTopic.setTopicForumId(34545L);
         List<ForumTopic> topics = Arrays.asList(firstTopic, secondTopic);
 
-        String renderedHtml = htmlRenderImpl.renderHtmlTextForSearchRequestEmail(searchRequests, topics);
+        String renderedHtml = htmlRender.renderHtmlTextForSearchRequestEmail(searchRequests, topics);
 
         assertEquals(expectedHtml, renderedHtml);
     }
 
     @Test
-    void renderHtmlTextForRegistrationConfirmation() throws IOException {
+    void renderHtmlTextForRegistrationConfirmationTest() throws IOException {
         String expectedHtml = IOUtils.toString(
                 this.getClass().getClassLoader().getResourceAsStream("mail/registrationConfirmation.html"),
                 "UTF-8"
         );
 
-        String renderedHtml = htmlRenderImpl.renderHtmlTextForRegistrationConfirmation("www.confirmation.com");
+        String renderedHtml = htmlRender.renderHtmlTextForRegistrationConfirmation("www.confirmation.com");
 
         assertEquals(expectedHtml, renderedHtml);
     }

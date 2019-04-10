@@ -3,10 +3,11 @@ package com.overclockers.fetcher.mail.impl;
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.entity.SearchRequest;
+import com.overclockers.fetcher.mail.HtmlRender;
 import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ForumTopicService;
 import com.overclockers.fetcher.service.SearchRequestService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
@@ -22,21 +23,22 @@ import java.util.List;
 @Log4j2
 @Service
 @Import(SimpleJavaMailSpringSupport.class)
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
 
     private static final String SEARCH_REQUEST_EMAIL_SUBJECT = "Topics according to your request";
     private static final String REGISTRATION_EMAIL_SUBJECT = "Registration Confirmation";
     private static final String SENDER_NAME = "Overclockers FS";
 
-    private HtmlRenderImpl render;
-    private ForumTopicService topicService;
-    private Mailer mailer;
-    private SearchRequestService requestService;
+    private final HtmlRender render;
+    private final ForumTopicService topicService;
+    private final Mailer mailer;
+    private final SearchRequestService requestService;
 
     @Async("threadPoolTaskExecutor")
     @Override
-    public void processUserRequestEmail(ApplicationUser user) {
+    public synchronized void processUserRequestEmail(ApplicationUser user) {
+        // ToDo implement some lock (synchronized mechanism for flow getRequests -> send -> save)
         List<SearchRequest> searchRequests = requestService.findSearchRequestsByUserId(user.getId());
 
         List<ForumTopic> topics = new ArrayList<>();
@@ -50,19 +52,23 @@ public class MailServiceImpl implements MailService {
             String htmlText = render.renderHtmlTextForSearchRequestEmail(searchRequests, topics);
 
             Email email = EmailBuilder.startingBlank()
-                    .from(SENDER_NAME, mailer.getServerConfig().getUsername())
+                    .from(SENDER_NAME, getSenderAddress())
                     .to(user.getEmail())
                     .withSubject(SEARCH_REQUEST_EMAIL_SUBJECT)
                     .withHTMLText(htmlText)
                     .buildEmail();
 
             log.info("Found '{}' topics by requests '{}' for user '{}'.", topics.size(), searchRequests, user.getEmail());
-            log.info("Sending email to '{}'", user.getEmail());
+            log.info("Sending email to '{}'.", user.getEmail());
             mailer.sendMail(email);
             topicService.registerSentTopics(topics, user);
         } else {
             log.info("No topics were found by request for user '{}'", user.getEmail());
         }
+    }
+
+    private String getSenderAddress() {
+        return mailer.getSession().getProperty("mail.smtps.username");
     }
 
     @Async("threadPoolTaskExecutor")
@@ -72,7 +78,7 @@ public class MailServiceImpl implements MailService {
         String htmlText = render.renderHtmlTextForRegistrationConfirmation(appUrl + "/confirm?token=" + user.getConfirmationToken());
 
         Email email = EmailBuilder.startingBlank()
-                .from(SENDER_NAME, mailer.getServerConfig().getUsername())
+                .from(SENDER_NAME)
                 .to(user.getEmail())
                 .withSubject(REGISTRATION_EMAIL_SUBJECT)
                 .withHTMLText(htmlText)

@@ -58,7 +58,7 @@ class RegisterControllerTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    public void init() {
+    void init() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setSuffix(".html");
 
