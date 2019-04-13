@@ -6,7 +6,7 @@ import com.overclockers.fetcher.entity.ForumTopic;
 import java.util.List;
 
 public interface ForumTopicService {
-    ForumTopic saveOrUpdateTopic(ForumTopic topic);
+    ForumTopic saveTopic(ForumTopic topic);
 
     void registerSentTopics(List<ForumTopic> forumTopics, ApplicationUser applicationUser);
 

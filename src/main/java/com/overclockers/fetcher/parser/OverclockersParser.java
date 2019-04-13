@@ -1,17 +1,21 @@
-package com.overclockers.fetcher.parser.impl;
+package com.overclockers.fetcher.parser;
 
-import com.overclockers.fetcher.parser.ElementParser;
+import com.overclockers.fetcher.entity.ForumTopic;
+import com.overclockers.fetcher.entity.ForumUser;
 import lombok.extern.log4j.Log4j2;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +23,7 @@ import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
 @Log4j2
 @Component
-public class OverclockersElementParser implements ElementParser {
+public class OverclockersParser {
 
     private static final String DATE_TIME_REGEXP = "\\d{2}.\\d{2}.\\d{4}\\s\\d{2}:\\d{2}";
     private static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
@@ -29,6 +33,19 @@ public class OverclockersElementParser implements ElementParser {
     private static final String SID_DELIMITER = "&sid=";
     private static final String A_TAG = "a";
     private static final String HREF_ATTRIBUTE = "href";
+
+    public List<ForumTopic> getForumTopics(String url) {
+        List<ForumTopic> topics = new ArrayList<>();
+
+        for (Element element : getPageTopicElements(getDocumentFromUrl(url))) {
+            ForumTopic topic = getTopic(element);
+            ForumUser user = getUser(element);
+            topic.setUser(user);
+            topics.add(topic);
+        }
+
+        return topics;
+    }
 
     private String removeCityFromTopic(String topic) {
         return topic.substring(topic.indexOf(']') + 2);
@@ -50,14 +67,12 @@ public class OverclockersElementParser implements ElementParser {
         return HOST_URL + TOPIC_PATH + getTopicForumId(href);
     }
 
-    @Override
-    public String getTopicTitle(Element element) {
+    private String getTopicTitle(Element element) {
         Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         return removeCityFromTopic(topicElements.text());
     }
 
-    @Override
-    public String getTopicLocation(Element element) {
+    private String getTopicLocation(Element element) {
         Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         String topicText = topicElements.text();
         if (topicText.contains("[") && topicText.contains("]")) {
@@ -69,38 +84,84 @@ public class OverclockersElementParser implements ElementParser {
         }
     }
 
-    @Override
-    public String getTopicForumId(Element element) {
+    private String getTopicForumId(Element element) {
         Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         String topicHref = topicElements.select(A_TAG).attr(HREF_ATTRIBUTE);
         return getTopicForumId(topicHref);
     }
 
-    @Override
-    public String getTopicLink(Element element) {
+    private String getTopicLink(Element element) {
         Elements topicElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_TITLE_VALUE);
         String topicHref = topicElements.select(A_TAG).attr(HREF_ATTRIBUTE);
         return getTopicLink(topicHref);
     }
 
-    public Elements getPageTopicElements(Document document) {
+    private Elements getPageTopicElements(Document document) {
         return document.getElementsByAttributeValueMatching(ELEMENT_CLASS_KEY, ELEMENT_TOPIC_VALUE_REGEXP);
     }
 
-    @Override
-    public String getAuthorUsername(Element element) {
+    private static final String URL_CONNECTING_ERROR = "Error connecting to the URL";
+
+    private Document getDocumentFromUrl(String url) {
+        Document doc;
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            log.error(URL_CONNECTING_ERROR + ": {}", url);
+            throw new IllegalArgumentException(URL_CONNECTING_ERROR);
+        }
+        return doc;
+    }
+
+    private ForumUser getUser(Element element) {
+        return ForumUser.builder()
+                .nickname(getAuthorUsername(element))
+                .userForumId(Long.valueOf(getAuthorProfileForumId(element)))
+                .build();
+    }
+
+    private ForumTopic getTopic(Element element) {
+        Document topicDocument = getDocumentFromUrl(getTopicLink(element));
+
+        return ForumTopic.builder()
+                .location(getTopicLocation(element))
+                .title(getTopicTitle(element))
+                .topicForumId(Long.valueOf(getTopicForumId(element)))
+                .topicCreatedDateTime(getFirstMessageDateTime(topicDocument))
+                .topicUpdatedDateTime(getUpdatedDateTime(topicDocument))
+                .build();
+    }
+
+    private ZonedDateTime getUpdatedDateTime(Document document) {
+        ZonedDateTime updatedDateTime;
+        Elements noticeElements = document.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_NOTICE_VALUE);
+        if (!noticeElements.isEmpty()) {
+            Element noticeEditedElement = noticeElements.first();
+            updatedDateTime = getDateTime(noticeEditedElement);
+        } else {
+            updatedDateTime = null;
+        }
+        return updatedDateTime;
+    }
+
+    private ZonedDateTime getFirstMessageDateTime(Document document) {
+        Elements authorElements = document.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
+        Element firstMessageElement = authorElements.select("p").first();
+        return getDateTime(firstMessageElement);
+    }
+
+    private String getAuthorUsername(Element element) {
         Elements authorElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
         return authorElements.select(A_TAG).text();
     }
 
-    @Override
-    public String getAuthorProfileForumId(Element element) {
+    private String getAuthorProfileForumId(Element element) {
         Elements authorElements = element.getElementsByAttributeValue(ELEMENT_CLASS_KEY, ELEMENT_AUTHOR_VALUE);
         String profileHref = authorElements.select(A_TAG).attr(HREF_ATTRIBUTE);
         return getUserProfileForumId(profileHref);
     }
 
-    public ZonedDateTime getDateTime(Element element) {
+    private ZonedDateTime getDateTime(Element element) {
         Pattern dateTimePattern = Pattern.compile("(" + DATE_TIME_REGEXP + ")");
         Matcher dateTimeMatcher = dateTimePattern.matcher(element.text());
 
@@ -117,7 +178,7 @@ public class OverclockersElementParser implements ElementParser {
         return convertToZonedUtc(LocalDateTime.parse(messageDateTime, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)));
     }
 
-    private ZonedDateTime convertToZonedUtc(LocalDateTime localDateTime){
+    private ZonedDateTime convertToZonedUtc(LocalDateTime localDateTime) {
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.of("Europe/Helsinki"));
         return zonedDateTime.withZoneSameInstant(ZoneId.of("UTC"));
     }

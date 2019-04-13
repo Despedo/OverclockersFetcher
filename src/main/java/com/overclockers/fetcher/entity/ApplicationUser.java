@@ -10,7 +10,6 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @Entity
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,4 +39,6 @@ public class ApplicationUser {
     private ZonedDateTime activatedDateTime;
     @Column(name = "created_datetime", nullable = false)
     private ZonedDateTime createdDateTime;
+    @Column(name = "updated_datetime")
+    private ZonedDateTime updatedDatetime;
 }

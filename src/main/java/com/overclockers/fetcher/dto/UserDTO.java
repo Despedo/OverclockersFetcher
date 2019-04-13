@@ -10,7 +10,6 @@ import javax.validation.constraints.Size;
 
 @Getter
 @Setter
-@ToString
 public class UserDTO {
     @NotNull(message = "Please provide your first name")
     @Size(message = "Wrong first name", min = 1, max = 255)

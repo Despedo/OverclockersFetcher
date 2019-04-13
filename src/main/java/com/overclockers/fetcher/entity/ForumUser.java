@@ -3,14 +3,11 @@ package com.overclockers.fetcher.entity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Getter
 @Setter
 @Entity
-@ToString
-@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

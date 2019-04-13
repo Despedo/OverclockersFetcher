@@ -2,10 +2,12 @@ package com.overclockers.fetcher.service.impl;
 
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.ForumTopic;
+import com.overclockers.fetcher.entity.ForumUser;
 import com.overclockers.fetcher.entity.SentTopic;
 import com.overclockers.fetcher.repository.ForumTopicRepository;
 import com.overclockers.fetcher.repository.SentTopicRepository;
 import com.overclockers.fetcher.service.ForumTopicService;
+import com.overclockers.fetcher.service.ForumUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,23 +23,31 @@ public class ForumTopicServiceImpl implements ForumTopicService {
 
     private ForumTopicRepository forumTopicRepository;
     private SentTopicRepository sentTopicRepository;
+    private ForumUserService userService;
 
     @Transactional
     @Override
-    public ForumTopic saveOrUpdateTopic(ForumTopic topic) {
-        ForumTopic existing = forumTopicRepository.findTopicByForumId(topic.getTopicForumId());
-        if (existing == null) {
+    public ForumTopic saveTopic(ForumTopic topic) {
+        ForumTopic existingTopic = forumTopicRepository.findTopicByForumId(topic.getTopicForumId());
+        if (existingTopic == null) {
+            ForumUser user = topic.getUser();
+            user.setCreatedDateTime(getCurrentTime());
+            topic.setUser(userService.saveUser(user));
+            topic.setCreatedDateTime(getCurrentTime());
             return forumTopicRepository.save(topic);
-        } else if (!existing.equals(topic)) {
-            topic.setId(existing.getId());
-            //Todo change to only saving, we need to save new topic instead updating to avoid issues when topic was sent to user
-            return forumTopicRepository.save(topic);
+        } else if (isTopicUpdated(topic, existingTopic)) {
+            topic.setUser(existingTopic.getUser());
+            return forumTopicRepository.save(existingTopic);
         } else {
-            return existing;
+            return existingTopic;
         }
     }
 
-    @Transactional
+    private boolean isTopicUpdated(ForumTopic topic, ForumTopic existing) {
+        return existing.getTopicUpdatedDateTime() != null && topic.getTopicUpdatedDateTime() != null &&
+                !existing.getTopicUpdatedDateTime().isEqual(topic.getTopicUpdatedDateTime());
+    }
+
     @Override
     public void registerSentTopics(List<ForumTopic> forumTopics, ApplicationUser applicationUser) {
         List<SentTopic> sentTopics = new ArrayList<>();

@@ -9,17 +9,14 @@ import java.time.ZonedDateTime;
 @Setter
 @Entity
 @ToString
-@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "topic")
 public class ForumTopic {
-    //ToDo implement storing updated_datetime
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
-    @EqualsAndHashCode.Exclude
     private Long id;
     @JoinColumn(name = "user_forum_id")
     @ManyToOne(targetEntity = ForumUser.class)
@@ -36,8 +33,6 @@ public class ForumTopic {
     private ZonedDateTime topicUpdatedDateTime;
     @Column(name = "created_datetime", nullable = false)
     private ZonedDateTime createdDateTime;
-    @Column(name = "updated_datetime")
-    private ZonedDateTime updatedDateTime;
     @OneToOne(mappedBy = "forumTopic")
     private SentTopic sentTopic;
 }
