@@ -1,6 +1,5 @@
 package com.overclockers.fetcher.service.impl;
 
-import com.overclockers.fetcher.dto.UserDTO;
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.repository.ApplicationUserRepository;
@@ -8,7 +7,6 @@ import com.overclockers.fetcher.service.ApplicationUserService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 

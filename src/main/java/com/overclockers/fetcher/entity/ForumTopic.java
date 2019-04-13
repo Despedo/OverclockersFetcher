@@ -8,7 +8,6 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @Entity
-@ToString
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.time.ZonedDateTime;
 
 @Getter
-@Setter
 @Entity
 @Builder
 @NoArgsConstructor

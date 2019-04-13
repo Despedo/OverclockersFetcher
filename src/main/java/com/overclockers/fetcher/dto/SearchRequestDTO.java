@@ -1,9 +1,9 @@
 package com.overclockers.fetcher.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
-@Setter
 @Builder
 public class SearchRequestDTO {
     private Long requestId;
