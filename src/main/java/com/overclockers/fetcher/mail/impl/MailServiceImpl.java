@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -50,11 +50,11 @@ public class MailServiceImpl implements MailService {
         // ToDo implement some lock (synchronized mechanism for flow getRequests -> send -> save)
         List<SearchRequest> searchRequests = requestService.findSearchRequestsByUserId(user.getId());
 
-        List<ForumTopic> topics = new ArrayList<>();
-        for (SearchRequest searchRequest : searchRequests) {
-            // ToDo implement space gaps variations ('rx580' = 'rx 580', 'ddr3' = 'ddr 3' = 'ddr3' = 'ddr_3')
-            topics.addAll(topicService.findTopicsForSending(searchRequest.getRequest(), user.getId()));
-        }
+
+        // ToDo implement space gaps variations ('rx580' = 'rx 580', 'ddr3' = 'ddr 3' = 'ddr3' = 'ddr_3')
+        List<ForumTopic> topics = searchRequests.stream()
+                .flatMap(searchRequest -> topicService.findTopicsForSending(searchRequest.getRequest(), user.getId()).stream())
+                .collect(Collectors.toList());
 
         if (!topics.isEmpty()) {
             String htmlText = render.renderHtmlTextForSearchRequestEmail(searchRequests, topics);

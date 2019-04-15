@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 
@@ -35,17 +35,15 @@ public class OverclockersParser {
     private static final String HREF_ATTRIBUTE = "href";
 
     public List<ForumTopic> getForumTopics(String url) {
-        //ToDo change to java8 style
-        List<ForumTopic> topics = new ArrayList<>();
+        Elements elements = getPageTopicElements(getDocumentFromUrl(url));
 
-        for (Element element : getPageTopicElements(getDocumentFromUrl(url))) {
-            ForumTopic topic = getTopic(element);
-            ForumUser user = getUser(element);
-            topic.setUser(user);
-            topics.add(topic);
-        }
-
-        return topics;
+        return elements.stream().map
+                (element -> {
+                    ForumTopic topic = getTopic(element);
+                    ForumUser user = getUser(element);
+                    topic.setUser(user);
+                    return topic;
+                }).collect(Collectors.toList());
     }
 
     private String removeCityFromTopic(String topic) {
