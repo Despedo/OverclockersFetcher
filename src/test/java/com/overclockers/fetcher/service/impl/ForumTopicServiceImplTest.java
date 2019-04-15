@@ -14,8 +14,7 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -51,7 +50,31 @@ class ForumTopicServiceImplTest {
         verify(userService, times(1)).saveUser(forumUser);
         verify(forumTopicRepository, times(1)).save(forumTopic);
         assertNotNull(savedForumTopic.getCreatedDateTime());
-        assertNotNull(savedForumTopic.getUser().getCreatedDateTime());
+        assertNotNull(savedForumTopic.getUser());
+    }
+
+    @Test
+    void saveNewTopicsTest() {
+        ForumUser forumUser = ForumUser.builder().id(1L).build();
+        Collection<ForumTopic> topics = Arrays.asList(ForumTopic.builder().topicForumId(23523L).user(forumUser).build(),
+                ForumTopic.builder().topicForumId(23523L).user(forumUser).build());
+
+        forumTopicService.saveTopics(topics);
+
+        verify(forumTopicRepository, times(1)).findTopicsByForumIds(anyCollection());
+        verify(userService, times(1)).saveUsers(anyCollection());
+        verify(forumTopicRepository, times(1)).saveAll(anyCollection());
+    }
+
+    @Test
+    void saveNewTopicsWithEmptyCollectionTest() {
+        Collection<ForumTopic> topics = Collections.emptyList();
+
+        forumTopicService.saveTopics(topics);
+
+        verify(forumTopicRepository, times(0)).findTopicsByForumIds(anyCollection());
+        verify(userService, times(0)).saveUsers(anyCollection());
+        verify(forumTopicRepository, times(0)).saveAll(anyCollection());
     }
 
     @Test

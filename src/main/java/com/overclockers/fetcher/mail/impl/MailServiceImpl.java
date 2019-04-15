@@ -7,12 +7,14 @@ import com.overclockers.fetcher.mail.HtmlRender;
 import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ForumTopicService;
 import com.overclockers.fetcher.service.SearchRequestService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.Mailer;
 import org.simplejavamail.springsupport.SimpleJavaMailSpringSupport;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,10 +32,17 @@ public class MailServiceImpl implements MailService {
     private static final String REGISTRATION_EMAIL_SUBJECT = "Registration Confirmation";
     private static final String SENDER_NAME = "Overclockers FS";
 
-    private final HtmlRender render;
-    private final ForumTopicService topicService;
-    private final Mailer mailer;
-    private final SearchRequestService requestService;
+    @Value("${simplejavamail.smtp.username}")
+    private String senderAddress;
+
+    @NonNull
+    private HtmlRender render;
+    @NonNull
+    private ForumTopicService topicService;
+    @NonNull
+    private Mailer mailer;
+    @NonNull
+    private SearchRequestService requestService;
 
     @Async("threadPoolTaskExecutor")
     @Override
@@ -43,7 +52,6 @@ public class MailServiceImpl implements MailService {
 
         List<ForumTopic> topics = new ArrayList<>();
         for (SearchRequest searchRequest : searchRequests) {
-            // ToDo implement finding by batch to avoid for
             // ToDo implement space gaps variations ('rx580' = 'rx 580', 'ddr3' = 'ddr 3' = 'ddr3' = 'ddr_3')
             topics.addAll(topicService.findTopicsForSending(searchRequest.getRequest(), user.getId()));
         }
@@ -52,7 +60,7 @@ public class MailServiceImpl implements MailService {
             String htmlText = render.renderHtmlTextForSearchRequestEmail(searchRequests, topics);
 
             Email email = EmailBuilder.startingBlank()
-                    .from(SENDER_NAME, getSenderAddress())
+                    .from(SENDER_NAME, senderAddress)
                     .to(user.getEmail())
                     .withSubject(SEARCH_REQUEST_EMAIL_SUBJECT)
                     .withHTMLText(htmlText)
@@ -65,10 +73,6 @@ public class MailServiceImpl implements MailService {
         } else {
             log.info("No topics were found by request for user '{}'", user.getEmail());
         }
-    }
-
-    private String getSenderAddress() {
-        return mailer.getSession().getProperty("mail.smtps.username");
     }
 
     @Async("threadPoolTaskExecutor")

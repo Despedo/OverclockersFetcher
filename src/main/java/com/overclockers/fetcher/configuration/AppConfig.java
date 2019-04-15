@@ -22,7 +22,6 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 
 @Configuration
-//ToDo check transactions
 @EnableTransactionManagement
 @ComponentScan({"com.overclockers.fetcher"})
 @EnableAsync(proxyTargetClass = true)

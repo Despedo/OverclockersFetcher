@@ -9,6 +9,7 @@ import java.time.ZonedDateTime;
 @Setter
 @Entity
 @Builder
+@EqualsAndHashCode(of = {"nickname", "userForumId"})
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_forum")

@@ -9,6 +9,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
@@ -35,6 +39,26 @@ class ForumUserServiceImplTest {
         verify(repository, times(1)).findUserByForumId(newForumUser.getUserForumId());
         verify(repository, times(1)).save(newForumUser);
         assertNotEquals(newForumUser, savedUser);
+    }
+
+    @Test
+    void saveNewUsersTest() {
+        List<ForumUser> newForumUsers = Arrays.asList(ForumUser.builder().userForumId(1L).build(), ForumUser.builder().userForumId(2L).build());
+
+        forumUserService.saveUsers(newForumUsers);
+
+        verify(repository, times(1)).findUsersByForumIds(anyCollection());
+        verify(repository, times(1)).saveAll(anyCollection());
+    }
+
+    @Test
+    void saveNewUsersWithEmptyCollectionTest() {
+        List<ForumUser> newForumUsers = Collections.emptyList();
+
+        forumUserService.saveUsers(newForumUsers);
+
+        verify(repository, times(0)).findUsersByForumIds(anyCollection());
+        verify(repository, times(0)).saveAll(anyCollection());
     }
 
     @Test

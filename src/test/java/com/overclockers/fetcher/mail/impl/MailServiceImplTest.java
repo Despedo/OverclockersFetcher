@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.simplejavamail.email.Email;
 import org.simplejavamail.mailer.Mailer;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.mail.Session;
 import java.time.ZonedDateTime;
@@ -66,7 +67,6 @@ class MailServiceImplTest {
                 testAppender.getLogEvents().get(0).getMessage().getFormattedMessage());
     }
 
-
     @Test
     void processUserRequestEmailWithRequestedTopicsTest() {
         TestAppender testAppender = createAppender(MailServiceImpl.class);
@@ -75,12 +75,11 @@ class MailServiceImplTest {
         List<SearchRequest> searchRequests = getDummySearchRequest(user, request);
         ForumUser forumUser = getDummyForumUser();
         List<ForumTopic> topics = getRequestDummyTopics(forumUser, request);
-        Session session = getDefaultSession();
 
         when(requestService.findSearchRequestsByUserId(anyLong())).thenReturn(searchRequests);
         when(topicService.findTopicsForSending(request, user.getId())).thenReturn(topics);
-        when(mailer.getSession()).thenReturn(session);
         when(render.renderHtmlTextForSearchRequestEmail(searchRequests, topics)).thenReturn("<html>Some rendered Html</html>");
+        ReflectionTestUtils.setField(mailService, "senderAddress", "test@mail.com");
 
         mailService.processUserRequestEmail(user);
 
@@ -134,6 +133,14 @@ class MailServiceImplTest {
         assertEquals(Level.INFO, testAppender.getLogEvents().get(0).getLevel());
         assertEquals("Sending registration email to '" + user.getEmail() + "'",
                 testAppender.getLogEvents().get(0).getMessage().getFormattedMessage());
+    }
+
+    private List<SearchRequest> getDummyRequests() {
+        return Arrays.asList(SearchRequest.builder().id(1L).request("1080").build(), SearchRequest.builder().id(2L).request("Asus").build());
+    }
+
+    private List<ForumTopic> getDummyTopics() {
+        return Arrays.asList(ForumTopic.builder().id(1L).build(), ForumTopic.builder().id(2L).build());
     }
 
     private Session getDefaultSession() {

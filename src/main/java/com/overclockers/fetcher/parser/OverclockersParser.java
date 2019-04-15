@@ -35,6 +35,7 @@ public class OverclockersParser {
     private static final String HREF_ATTRIBUTE = "href";
 
     public List<ForumTopic> getForumTopics(String url) {
+        //ToDo change to java8 style
         List<ForumTopic> topics = new ArrayList<>();
 
         for (Element element : getPageTopicElements(getDocumentFromUrl(url))) {

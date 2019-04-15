@@ -14,7 +14,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -42,7 +41,7 @@ class OverclockersFetchingServiceTest {
         fetchingService.fetchAndSaveTopics();
 
         verify(parser, times(coldStartFetchingSize)).getForumTopics(anyString());
-        verify(topicService, times(forumTopics.size() * coldStartFetchingSize)).saveTopic(any(ForumTopic.class));
+        verify(topicService, times(coldStartFetchingSize)).saveTopics(anyList());
     }
 
     @Test
@@ -55,6 +54,6 @@ class OverclockersFetchingServiceTest {
         fetchingService.fetchAndSaveTopics();
 
         verify(parser, times(hotStartFetchingSize)).getForumTopics(anyString());
-        verify(topicService, times(forumTopics.size() * hotStartFetchingSize)).saveTopic(any(ForumTopic.class));
+        verify(topicService, times(hotStartFetchingSize)).saveTopics(anyList());
     }
 }
