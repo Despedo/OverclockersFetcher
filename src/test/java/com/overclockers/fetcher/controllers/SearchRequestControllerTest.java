@@ -73,7 +73,7 @@ class SearchRequestControllerTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    public void init() {
+    void init() {
         this.mockMvc = MockMvcBuilders
                 .webAppContextSetup(wac)
                 .apply(springSecurity())

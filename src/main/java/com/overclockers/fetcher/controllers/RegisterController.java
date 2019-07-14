@@ -4,7 +4,6 @@ import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
 import com.overclockers.fetcher.dto.UserDTO;
 import com.overclockers.fetcher.entity.ApplicationUser;
-import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ApplicationUserService;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +20,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.overclockers.fetcher.constants.ControllerConstants.*;
 
@@ -50,8 +47,6 @@ public class RegisterController {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @NonNull
     private ApplicationUserService userService;
-    @NonNull
-    private MailService mailService;
 
     @GetMapping(value = "/login")
     public ModelAndView showLoginPage(ModelAndView modelAndView, @RequestParam(required = false, value = "error", defaultValue = "false") boolean error) {
@@ -72,41 +67,27 @@ public class RegisterController {
         modelAndView.setViewName(REGISTER_VIEW);
 
         if (bindingResult.hasFieldErrors()) {
-            log.info("User validation error: {}", user);
+            log.info("User validation error: {}", user.getEmail());
             modelAndView.addObject(USER_ATTRIBUTE, user);
         } else {
             // Lookup user in database by e-mail
             ApplicationUser existingUser = userService.findUserByEmail(user.getEmail());
             if (existingUser != null) {
-                log.info("User already exists: {}", existingUser);
+                log.info("User already exists: {}", existingUser.getEmail());
                 modelAndView.addObject(USER_ATTRIBUTE, user);
                 modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, userRegisteredMessage);
                 bindingResult.reject("email");
             } else {
-                processRegistration(user, request);
+                String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+                ApplicationUser applicationUser = userService.registerUser(user.getEmail(), user.getFirstName(), user.getLastName(), appUrl);
                 modelAndView.addObject(USER_ATTRIBUTE, user);
-                modelAndView.addObject(CONFIRMATION_MESSAGE_ATTRIBUTE, emailSentMessage + user.getEmail());
+                modelAndView.addObject(CONFIRMATION_MESSAGE_ATTRIBUTE, emailSentMessage + applicationUser.getEmail());
             }
         }
 
         return modelAndView;
     }
 
-    private void processRegistration(UserDTO user, HttpServletRequest request) {
-        ApplicationUser applicationUser = ApplicationUser.builder()
-                .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .enabled(false)
-                .confirmationToken(UUID.randomUUID().toString())
-                .createdDateTime(LocalDateTime.now())
-                .build();
-
-        userService.saveUser(applicationUser);
-
-        String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-        mailService.processRegistrationEmail(applicationUser, appUrl);
-    }
 
     @GetMapping(value = "/confirm")
     public ModelAndView showConfirmationPage(ModelAndView modelAndView, @RequestParam("token") String token) {
@@ -150,9 +131,7 @@ public class RegisterController {
                 return modelAndView;
             }
 
-            user.setPassword(bCryptPasswordEncoder.encode(password));
-            user.setEnabled(true);
-            userService.saveUser(user);
+            userService.activateUser(user, bCryptPasswordEncoder.encode(password));
 
             modelAndView.setViewName(CONFIRM_VIEW);
             modelAndView.addObject(SUCCESS_MESSAGE_ATTRIBUTE, passSetMessage);

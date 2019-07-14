@@ -21,14 +21,13 @@ public class ScheduledTask {
     private MailService mailService;
 
     @Scheduled(cron = "${processing.cron}")
+//    @Scheduled(fixedRate = 300000)
     public void processTopics() {
         log.info("Scheduled topics processing");
         overclockersFetchingService.fetchAndSaveTopics();
 
         List<ApplicationUser> applicationUsers = applicationUserService.findAllEnabledUsers();
-        for (ApplicationUser user : applicationUsers) {
-            mailService.processUserRequestEmail(user);
-        }
+        applicationUsers.forEach(user -> mailService.processUserRequestEmail(user));
 
     }
 

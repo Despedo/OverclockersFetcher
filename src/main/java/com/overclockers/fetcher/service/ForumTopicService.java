@@ -2,13 +2,22 @@ package com.overclockers.fetcher.service;
 
 import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.ForumTopic;
+import com.overclockers.fetcher.entity.SearchRequest;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface ForumTopicService {
-    ForumTopic saveOrUpdateTopic(ForumTopic topic);
+    ForumTopic saveTopic(ForumTopic topic);
 
-    void registerSentTopics(List<ForumTopic> forumTopics, ApplicationUser applicationUser);
+    void saveTopics(Collection<ForumTopic> topics);
 
-    List<ForumTopic> findTopicsForSending(String searchTitle, Long userId);
+    void registerSentTopics(Collection<ForumTopic> forumTopics, ApplicationUser applicationUser);
+
+    Map<SearchRequest, List<ForumTopic>> findTopicsMapForSending(List<SearchRequest> searchRequests, Long userId);
+
+    List<ForumTopic> findTopicsByForumIds(Collection<Long> forumIds);
+
+    ForumTopic findTopicByForumId(Long forumId);
 }

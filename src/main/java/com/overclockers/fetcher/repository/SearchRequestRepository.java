@@ -10,12 +10,12 @@ import java.util.List;
 
 @Repository
 public interface SearchRequestRepository extends JpaRepository<SearchRequest, Long> {
-    @Query("FROM SearchRequest s WHERE s.user.userId = :userId")
+    @Query("FROM SearchRequest s WHERE s.user.id = :userId")
     List<SearchRequest> findSearchRequestByUserId(@Param("userId") Long userId);
 
     @Query("FROM SearchRequest s WHERE s.user.email = :email")
     List<SearchRequest> findSearchRequestByUserEmail(@Param("email") String email);
 
-    @Query("FROM SearchRequest s WHERE s.requestId = :requestId")
+    @Query("FROM SearchRequest s WHERE s.id = :requestId")
     SearchRequest findSearchRequestById(@Param("requestId") Long requestId);
 }

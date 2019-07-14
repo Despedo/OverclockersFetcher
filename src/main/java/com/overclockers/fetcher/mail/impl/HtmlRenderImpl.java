@@ -4,27 +4,30 @@ import com.overclockers.fetcher.entity.ForumTopic;
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.mail.HtmlRender;
 import j2html.tags.DomContent;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.overclockers.fetcher.constants.OverclockersConstants.HOST_URL;
 import static com.overclockers.fetcher.constants.OverclockersConstants.TOPIC_PATH;
 import static j2html.TagCreator.*;
 
+@RequiredArgsConstructor
 @Service
 public class HtmlRenderImpl implements HtmlRender {
 
     private static final String IMG_URL = "https://imgur.com/RUa4aSe.png";
 
     @Override
-    public String renderHtmlTextForSearchRequestEmail(List<SearchRequest> searchRequests, List<ForumTopic> topics) {
+    public String renderHtmlTextForSearchRequestEmail(Map<SearchRequest, List<ForumTopic>> topicsMap) {
         return html(
                 body(
                         hr(),
                         img().withSrc(IMG_URL),
                         hr(),
-                        generateTopicsContent(searchRequests, topics)
+                        generateTopicsContent(topicsMap)
                 )
         ).renderFormatted();
     }
@@ -42,16 +45,12 @@ public class HtmlRenderImpl implements HtmlRender {
         ).renderFormatted();
     }
 
-    private DomContent generateTopicsContent(List<SearchRequest> searchRequests, List<ForumTopic> topics) {
-        return each(searchRequests, searchRequest ->
-                p().with(
+    private DomContent generateTopicsContent(Map<SearchRequest, List<ForumTopic>> topicsMap) {
+        return each(topicsMap.keySet(), searchRequest ->
+                p(
                         strong("According to your request: " + searchRequest.getRequest()),
-                        iffElse(filter(topics, topic -> topic.getTitle().contains(searchRequest.getRequest())).isEmpty(), li("No results."),
-                                each(filter(topics, topic -> topic.getTitle().contains(searchRequest.getRequest())),
-                                        topic -> li(a(topic.getTitle()).withHref(getTopicUrl(topic)))
-                                )
-                        )
-                )
+                        each(topicsMap.get(searchRequest), topic -> li(a(topic.getTitle()).withHref(getTopicUrl(topic))))
+                ).with()
         );
     }
 

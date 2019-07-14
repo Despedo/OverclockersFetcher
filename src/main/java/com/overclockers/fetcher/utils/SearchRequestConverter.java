@@ -22,7 +22,7 @@ public class SearchRequestConverter {
     private SearchRequestDTO convert(SearchRequest searchRequest) {
         String createdDateTime = searchRequest.getCreatedDateTime().format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
         return SearchRequestDTO.builder().
-                requestId(searchRequest.getRequestId()).
+                requestId(searchRequest.getId()).
                 request(searchRequest.getRequest()).
                 createdDateTime(createdDateTime).
                 build();

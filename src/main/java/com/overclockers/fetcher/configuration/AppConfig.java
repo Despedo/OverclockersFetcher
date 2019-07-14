@@ -4,31 +4,32 @@ import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 @Configuration
-//ToDo check transactions
 @EnableTransactionManagement
 @ComponentScan({"com.overclockers.fetcher"})
-
+@EnableAsync(proxyTargetClass = true)
 @EnableJpaRepositories("com.overclockers.fetcher.repository")
 public class AppConfig implements WebMvcConfigurer {
 
     private static final String DATABASE_DRIVER = "db.driver";
-    private static final String DATABASE_PASSWORD = "db.password";
+    private static final String DATABASE_PAS = "db.password";
     private static final String DATABASE_URL = "db.url";
     private static final String DATABASE_USERNAME = "db.username";
     private static final String HIBERNATE_DIALECT = "hibernate.dialect";
@@ -39,13 +40,22 @@ public class AppConfig implements WebMvcConfigurer {
     @Resource
     private Environment env;
 
+    @Bean(name = "threadPoolTaskExecutor")
+    public Executor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor executor  = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(25);
+        executor.setQueueCapacity(30);
+        return executor;
+    }
+
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(env.getRequiredProperty(DATABASE_DRIVER));
         dataSource.setUrl(env.getRequiredProperty(DATABASE_URL));
         dataSource.setUsername(env.getRequiredProperty(DATABASE_USERNAME));
-        dataSource.setPassword(env.getRequiredProperty(DATABASE_PASSWORD));
+        dataSource.setPassword(env.getRequiredProperty(DATABASE_PAS));
 
         return dataSource;
     }

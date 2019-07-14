@@ -33,6 +33,7 @@ public class LoginLogoutTest {
     private static final String TEST_USER_EMAIL = "Alex.W@gmail.com";
     private static final String TEST_USER_PASS = "The55rongPa55";
     private static final String DISABLED_TEST_USER_EMAIL = "John.P@gmail.com";
+    private static final String WRONG_TEST_USER_EMAIL = "John.Ps@gmail.com";
     private static final String DISABLED_TEST_USER_PASS = "Be77erAnd55Stronger";
 
     @Autowired
@@ -79,6 +80,17 @@ public class LoginLogoutTest {
                 .andExpect(redirectedUrl("/login?error=true"))
                 .andExpect(unauthenticated());
     }
+
+    @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
+    @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)
+    @Test
+    void loginWithWrongUserTest() throws Exception {
+        mockMvc.perform(formLogin().user(WRONG_TEST_USER_EMAIL).password(DISABLED_TEST_USER_PASS))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login?error=true"))
+                .andExpect(unauthenticated());
+    }
+
 
     @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)
     @Sql(value = "classpath:sql/clearDb.sql", executionPhase = AFTER_TEST_METHOD)

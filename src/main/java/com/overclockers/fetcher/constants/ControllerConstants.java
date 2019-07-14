@@ -1,5 +1,9 @@
 package com.overclockers.fetcher.constants;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ControllerConstants {
     public static final String REGISTER_VIEW = "register";
     public static final String LOGIN_VIEW = "login";
@@ -16,7 +20,4 @@ public class ControllerConstants {
     public static final String EMPTY_MESSAGE_ATTRIBUTE = "emptyMessage";
     public static final String USER_ATTRIBUTE = "user";
     public static final String CONFIRMATION_TOKEN_ATTRIBUTE = "confirmationToken";
-
-    private ControllerConstants() {
-    }
 }

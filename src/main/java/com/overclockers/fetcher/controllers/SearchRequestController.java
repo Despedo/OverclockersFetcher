@@ -1,11 +1,11 @@
 package com.overclockers.fetcher.controllers;
 
-import com.overclockers.fetcher.utils.SearchRequestConverter;
-import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.authrization.ApplicationUserDetails;
+import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.entity.SearchRequest;
 import com.overclockers.fetcher.service.ApplicationUserService;
 import com.overclockers.fetcher.service.SearchRequestService;
+import com.overclockers.fetcher.utils.SearchRequestConverter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -16,11 +16,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 import static com.overclockers.fetcher.constants.ControllerConstants.*;
+import static com.overclockers.fetcher.utils.DateTimeUtil.getCurrentTime;
 
 @Controller
 @Log4j2
@@ -78,7 +78,7 @@ public class SearchRequestController {
             if (loggedUser != null && loggedUser.isEnabled()) {
                 SearchRequest request = SearchRequest.builder()
                         .request(searchRequest)
-                        .createdDateTime(LocalDateTime.now())
+                        .createdDateTime(getCurrentTime())
                         .user(loggedUser)
                         .build();
 

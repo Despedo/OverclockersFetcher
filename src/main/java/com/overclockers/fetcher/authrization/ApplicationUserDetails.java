@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-//ToDo check is it possible to move user details to ApplicationUser or to other package
 public class ApplicationUserDetails implements UserDetails {
 
     transient ApplicationUser user;
