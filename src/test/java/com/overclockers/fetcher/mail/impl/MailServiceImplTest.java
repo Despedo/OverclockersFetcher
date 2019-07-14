@@ -21,10 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.mail.Session;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static com.overclockers.fetcher.TestAppender.createAppender;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,17 +72,18 @@ class MailServiceImplTest {
         List<SearchRequest> searchRequests = getDummySearchRequest(user, request);
         ForumUser forumUser = getDummyForumUser();
         List<ForumTopic> topics = getRequestDummyTopics(forumUser, request);
+        Map<SearchRequest, List<ForumTopic>> topicsMap = Collections.singletonMap(SearchRequest.builder().request(request).build(), topics);
 
         when(requestService.findSearchRequestsByUserId(anyLong())).thenReturn(searchRequests);
-        when(topicService.findTopicsForSending(request, user.getId())).thenReturn(topics);
-        when(render.renderHtmlTextForSearchRequestEmail(searchRequests, topics)).thenReturn("<html>Some rendered Html</html>");
+        when(topicService.findTopicsMapForSending(searchRequests, user.getId())).thenReturn(topicsMap);
+        when(render.renderHtmlTextForSearchRequestEmail(topicsMap)).thenReturn("<html>Some rendered Html</html>");
         ReflectionTestUtils.setField(mailService, "senderAddress", "test@mail.com");
 
         mailService.processUserRequestEmail(user);
 
         verify(requestService).findSearchRequestsByUserId(user.getId());
-        verify(topicService).findTopicsForSending(request, user.getId());
-        verify(render).renderHtmlTextForSearchRequestEmail(searchRequests, topics);
+        verify(topicService).findTopicsMapForSending(searchRequests, user.getId());
+        verify(render).renderHtmlTextForSearchRequestEmail(topicsMap);
         verify(mailer).sendMail(any(Email.class));
         verify(topicService).registerSentTopics(topics, user);
         assertEquals(2, testAppender.getLogEvents().size());
@@ -103,16 +101,16 @@ class MailServiceImplTest {
         String request = "1080Ti";
         ApplicationUser user = getDummyApplicationUser();
         List<SearchRequest> searchRequests = getDummySearchRequest(user, request);
-        List<ForumTopic> topics = Collections.emptyList();
+        Map<SearchRequest, List<ForumTopic>> topicsMap = Collections.EMPTY_MAP;
 
         when(requestService.findSearchRequestsByUserId(anyLong())).thenReturn(searchRequests);
-        when(topicService.findTopicsForSending(request, user.getId())).thenReturn(topics);
+        when(topicService.findTopicsMapForSending(searchRequests, user.getId())).thenReturn(topicsMap);
 
         mailService.processUserRequestEmail(user);
 
         verify(requestService).findSearchRequestsByUserId(user.getId());
-        verify(topicService).findTopicsForSending(request, user.getId());
-        verify(render, never()).renderHtmlTextForSearchRequestEmail(anyList(), anyList());
+        verify(topicService).findTopicsMapForSending(searchRequests, user.getId());
+        verify(render, never()).renderHtmlTextForSearchRequestEmail(anyMap());
         verify(mailer, never()).sendMail(any(Email.class));
         verify(topicService, never()).registerSentTopics(anyList(), any(ApplicationUser.class));
     }
@@ -133,20 +131,6 @@ class MailServiceImplTest {
         assertEquals(Level.INFO, testAppender.getLogEvents().get(0).getLevel());
         assertEquals("Sending registration email to '" + user.getEmail() + "'",
                 testAppender.getLogEvents().get(0).getMessage().getFormattedMessage());
-    }
-
-    private List<SearchRequest> getDummyRequests() {
-        return Arrays.asList(SearchRequest.builder().id(1L).request("1080").build(), SearchRequest.builder().id(2L).request("Asus").build());
-    }
-
-    private List<ForumTopic> getDummyTopics() {
-        return Arrays.asList(ForumTopic.builder().id(1L).build(), ForumTopic.builder().id(2L).build());
-    }
-
-    private Session getDefaultSession() {
-        Properties properties = new Properties();
-        properties.setProperty("mail.smtps.username", "test@mail.com");
-        return Session.getDefaultInstance(properties);
     }
 
     private List<SearchRequest> getDummySearchRequest(ApplicationUser user, String request) {

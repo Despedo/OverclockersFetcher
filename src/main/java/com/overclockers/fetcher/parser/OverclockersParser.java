@@ -25,7 +25,7 @@ import static com.overclockers.fetcher.constants.OverclockersConstants.*;
 @Component
 public class OverclockersParser {
 
-    private static final String DATE_TIME_REGEXP = "\\d{2}.\\d{2}.\\d{4}\\s\\d{2}:\\d{2}";
+    private static final String DATE_TIME_REGEX = "\\d{2}.\\d{2}.\\d{4}\\s\\d{2}:\\d{2}";
     private static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
     private static final String DATE_TIME_FORMAT_ERROR = "Message date time format is not valid";
     private static final String USER_PROFILE_DELIMITER = "&u=";
@@ -161,7 +161,7 @@ public class OverclockersParser {
     }
 
     private ZonedDateTime getDateTime(Element element) {
-        Pattern dateTimePattern = Pattern.compile("(" + DATE_TIME_REGEXP + ")");
+        Pattern dateTimePattern = Pattern.compile("(" + DATE_TIME_REGEX + ")");
         Matcher dateTimeMatcher = dateTimePattern.matcher(element.text());
 
         String messageDateTime = "";
@@ -169,7 +169,7 @@ public class OverclockersParser {
             messageDateTime = dateTimeMatcher.group(1);
         }
 
-        if (!messageDateTime.matches(DATE_TIME_REGEXP)) {
+        if (!messageDateTime.matches(DATE_TIME_REGEX)) {
             log.error(DATE_TIME_FORMAT_ERROR + ": {}", messageDateTime);
             throw new IllegalArgumentException(DATE_TIME_FORMAT_ERROR);
         }

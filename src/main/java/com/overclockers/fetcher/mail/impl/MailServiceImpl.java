@@ -19,7 +19,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -47,17 +49,11 @@ public class MailServiceImpl implements MailService {
     @Async("threadPoolTaskExecutor")
     @Override
     public synchronized void processUserRequestEmail(ApplicationUser user) {
-        // ToDo implement some lock (synchronized mechanism for flow getRequests -> send -> save)
         List<SearchRequest> searchRequests = requestService.findSearchRequestsByUserId(user.getId());
+        Map<SearchRequest, List<ForumTopic>> topicsMap = topicService.findTopicsMapForSending(searchRequests, user.getId());
 
-
-        // ToDo implement space gaps variations ('rx580' = 'rx 580', 'ddr3' = 'ddr 3' = 'ddr3' = 'ddr_3')
-        List<ForumTopic> topics = searchRequests.stream()
-                .flatMap(searchRequest -> topicService.findTopicsForSending(searchRequest.getRequest(), user.getId()).stream())
-                .collect(Collectors.toList());
-
-        if (!topics.isEmpty()) {
-            String htmlText = render.renderHtmlTextForSearchRequestEmail(searchRequests, topics);
+        if (!topicsMap.isEmpty()) {
+            String htmlText = render.renderHtmlTextForSearchRequestEmail(topicsMap);
 
             Email email = EmailBuilder.startingBlank()
                     .from(SENDER_NAME, senderAddress)
@@ -66,10 +62,11 @@ public class MailServiceImpl implements MailService {
                     .withHTMLText(htmlText)
                     .buildEmail();
 
-            log.info("Found '{}' topics by requests '{}' for user '{}'.", topics.size(), searchRequests, user.getEmail());
+            log.info("Found '{}' topics by requests '{}' for user '{}'.", topicsMap.values().stream()
+                    .flatMap(Collection::stream).collect(Collectors.toList()).size(), searchRequests, user.getEmail());
             log.info("Sending email to '{}'.", user.getEmail());
             mailer.sendMail(email);
-            topicService.registerSentTopics(topics, user);
+            topicService.registerSentTopics(topicsMap.values().stream().flatMap(Collection::stream).collect(Collectors.toList()), user);
         } else {
             log.info("No topics were found by request for user '{}'", user.getEmail());
         }
