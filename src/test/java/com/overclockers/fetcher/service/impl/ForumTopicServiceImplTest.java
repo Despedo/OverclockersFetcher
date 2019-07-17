@@ -139,7 +139,6 @@ class ForumTopicServiceImplTest {
         CriteriaBuilder criteriaBuilder = mock(CriteriaBuilder.class);
         CriteriaQuery criteriaQuery = mock(CriteriaQuery.class);
         Root root = mock(Root.class);
-        Predicate predicate = mock(Predicate.class);
         Path path = mock(Path.class);
         Join join = mock(Join.class);
         Query query = mock(Query.class);
@@ -149,12 +148,6 @@ class ForumTopicServiceImplTest {
         when(session.getCriteriaBuilder()).thenReturn(criteriaBuilder);
         when(session.createQuery(criteriaQuery)).thenReturn(query);
         when(criteriaBuilder.createQuery(any())).thenReturn(criteriaQuery);
-        when(criteriaBuilder.like(any(), anyString())).thenReturn(predicate);
-        when(criteriaBuilder.or(any())).thenReturn(predicate);
-        when(criteriaBuilder.notEqual(path, userId)).thenReturn(predicate);
-        when(criteriaBuilder.isNull(path)).thenReturn(predicate);
-        when(criteriaBuilder.or(any(), any())).thenReturn(predicate);
-        when(criteriaBuilder.and(any(), any())).thenReturn(predicate);
         when(criteriaQuery.from(ForumTopic.class)).thenReturn(root);
         when(criteriaQuery.select(any())).thenReturn(criteriaQuery);
         when(root.join(anyString(), eq(JoinType.LEFT))).thenReturn(join);

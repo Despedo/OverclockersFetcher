@@ -20,7 +20,6 @@ class RequestProcessorImplTest {
         SearchRequest firstRequest = SearchRequest.builder().request("1080ti titan").build();
         SearchRequest secondRequest = SearchRequest.builder().request("i8700k").build();
         Set<String> firstRequestPermutations = Sets.newHashSet(
-                "1080tititan",
                 "1080 ti titan",
                 "1080 titan ti",
                 "ti 1080 titan",
@@ -29,7 +28,6 @@ class RequestProcessorImplTest {
                 "titan ti 1080"
         );
         Set<String> secondRequestPermutations = Sets.newHashSet(
-                "i8700k",
                 "i 8700 k",
                 "i k 8700",
                 "8700 i k",

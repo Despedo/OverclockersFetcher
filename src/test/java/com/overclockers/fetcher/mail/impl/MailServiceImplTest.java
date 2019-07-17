@@ -101,7 +101,7 @@ class MailServiceImplTest {
         String request = "1080Ti";
         ApplicationUser user = getDummyApplicationUser();
         List<SearchRequest> searchRequests = getDummySearchRequest(user, request);
-        Map<SearchRequest, List<ForumTopic>> topicsMap = Collections.EMPTY_MAP;
+        Map<SearchRequest, List<ForumTopic>> topicsMap = Collections.emptyMap();
 
         when(requestService.findSearchRequestsByUserId(anyLong())).thenReturn(searchRequests);
         when(topicService.findTopicsMapForSending(searchRequests, user.getId())).thenReturn(topicsMap);
