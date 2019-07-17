@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
@@ -154,6 +155,7 @@ class ForumTopicServiceImplTest {
         when(join.get(anyString())).thenReturn(path);
         when(join.join(anyString(), eq(JoinType.LEFT))).thenReturn(join);
         when(query.getResultList()).thenReturn(Collections.emptyList());
+        ReflectionTestUtils.setField(forumTopicService, "fetchLimitDays", 7L);
 
         forumTopicService.findTopicsMapForSending(Collections.singletonList(searchRequest), userId);
 
