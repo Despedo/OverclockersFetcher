@@ -17,7 +17,6 @@ import static java.util.stream.Collectors.mapping;
 public class RequestProcessorImpl implements RequestProcessor {
 
     private static final String SPACE_CHAR = " ";
-    private static final String EMPTY_CHAR = "";
     // This RexExp split string by words, numbers, spaces and '+' '-' characters
     private static final String SPLIT_REGEX = "[-+]|\\s|(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)";
     private static final String SPACE_SEQUENCE_REGEX = "\\s+";
@@ -39,8 +38,6 @@ public class RequestProcessorImpl implements RequestProcessor {
         String[] split = preparedRequest.split(SPACE_REGEX);
 
         permute(permutations, preparedRequest, 0, split.length - 1);
-        // ToDo fix this by SQL query
-        permutations.add(request.replaceAll(SPACE_CHAR, EMPTY_CHAR));
         return permutations;
     }
 
