@@ -21,27 +21,27 @@ import javax.sql.DataSource;
 @EnableJpaRepositories("com.overclockers.fetcher.repository")
 public class TestAppConfiguration extends WebMvcConfigurationSupport {
 
-    @Bean
-    MariaDB4jSpringService mariaDB4jSpringService() {
-        return new MariaDB4jSpringService();
-    }
-
-    @Bean
-    DataSource dataSource(MariaDB4jSpringService mariaDB4jSpringService,
-                          @Value("${app.mariaDB4j.databaseName}") String databaseName,
-                          @Value("${spring.datasource.username}") String datasourceUsername,
-                          @Value("${spring.datasource.password}") String datasourcePassword,
-                          @Value("${spring.datasource.driver-class-name}") String datasourceDriver) {
-
-        DBConfigurationBuilder config = mariaDB4jSpringService.getConfiguration();
-
-        return DataSourceBuilder
-                .create()
-                .username(datasourceUsername)
-                .password(datasourcePassword)
-                .url(config.getURL(databaseName))
-                .driverClassName(datasourceDriver)
-                .build();
-    }
+//    @Bean
+//    MariaDB4jSpringService mariaDB4jSpringService() {
+//        return new MariaDB4jSpringService();
+//    }
+//
+//    @Bean
+//    DataSource dataSource(MariaDB4jSpringService mariaDB4jSpringService,
+//                          @Value("${app.mariaDB4j.databaseName}") String databaseName,
+//                          @Value("${spring.datasource.username}") String datasourceUsername,
+//                          @Value("${spring.datasource.password}") String datasourcePassword,
+//                          @Value("${spring.datasource.driver-class-name}") String datasourceDriver) {
+//
+//        DBConfigurationBuilder config = mariaDB4jSpringService.getConfiguration();
+//
+//        return DataSourceBuilder
+//                .create()
+//                .username(datasourceUsername)
+//                .password(datasourcePassword)
+//                .url(config.getURL(databaseName))
+//                .driverClassName(datasourceDriver)
+//                .build();
+//    }
 
 }
