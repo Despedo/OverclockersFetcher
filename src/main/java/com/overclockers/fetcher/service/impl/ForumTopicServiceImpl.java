@@ -6,29 +6,33 @@ import com.overclockers.fetcher.repository.SentTopicRepository;
 import com.overclockers.fetcher.service.ForumTopicService;
 import com.overclockers.fetcher.service.ForumUserService;
 import com.overclockers.fetcher.service.RequestProcessor;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
+import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.overclockers.fetcher.utils.DateTimeUtil.getCurrentTime;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ForumTopicServiceImpl implements ForumTopicService {
 
+    @Value("${fetch.limit.days}")
+    private Long fetchLimitDays;
+
     private static final String ZERO_OR_MORE_REGEX = ".*";
-    private static final String SINGLE_OR_NOT_REGEX = ".?";
+    private static final String ZERO_OR_ONE_REGEX = ".?";
     private static final String SPACE_CHAR = " ";
-    private static final String ZERO_OR_MORE_LIKE = "%";
-    private static final String SINGLE_SQL_LIKE = "_";
 
     @NonNull
     private ForumTopicRepository forumTopicRepository;
@@ -104,7 +108,6 @@ public class ForumTopicServiceImpl implements ForumTopicService {
     }
 
     // ToDo add search request to sent topics table. Possible issue when user adds new request that has matches already sent topic
-    // ToDo add filtering to fetch topics only for last week
     @Transactional
     @Override
     public Map<SearchRequest, List<ForumTopic>> findTopicsMapForSending(List<SearchRequest> searchRequests, Long userId) {
@@ -117,9 +120,10 @@ public class ForumTopicServiceImpl implements ForumTopicService {
             Set<String> allRequestsPermutations = requestsPermutationsMap.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
 
             Root<ForumTopic> root = criteriaQuery.from(ForumTopic.class);
-            Predicate likeTitle = prepareOrLikeTitlePredicate(allRequestsPermutations, criteriaBuilder, root);
-            Predicate notEqualToUserId = prepareNotEqualUserPredicate(userId, criteriaBuilder, root);
-            criteriaQuery.select(root).where(criteriaBuilder.and(likeTitle, notEqualToUserId));
+            Predicate[] titleRegexp = prepareTitleRegexpPredicates(allRequestsPermutations, criteriaBuilder, root);
+            Predicate notEqualToUserId = prepareUserNotEqualPredicate(userId, criteriaBuilder, root);
+            Predicate topicBefore = prepareTopicBeforePredicate(fetchLimitDays, criteriaBuilder, root);
+            criteriaQuery.select(root).where(criteriaBuilder.and(criteriaBuilder.or(titleRegexp), notEqualToUserId, topicBefore));
             Query<ForumTopic> query = session.createQuery(criteriaQuery);
 
             List<ForumTopic> forumTopics = query.getResultList();
@@ -139,26 +143,33 @@ public class ForumTopicServiceImpl implements ForumTopicService {
         }
     }
 
-    boolean isTopicMatchesToRequest(Set<String> requests, ForumTopic forumTopic) {
+    private boolean isTopicMatchesToRequest(Set<String> requests, ForumTopic forumTopic) {
         return requests.stream().anyMatch(s -> forumTopic.getTitle().toLowerCase().matches(getRequestMatchingRegex(s)));
     }
 
     private String getRequestMatchingRegex(String request) {
-        return ZERO_OR_MORE_REGEX + request.toLowerCase().replaceAll(SPACE_CHAR, SINGLE_OR_NOT_REGEX) + ZERO_OR_MORE_REGEX;
+        return ZERO_OR_MORE_REGEX + request.toLowerCase().replaceAll(SPACE_CHAR, ZERO_OR_ONE_REGEX) + ZERO_OR_MORE_REGEX;
     }
 
-    private Predicate prepareNotEqualUserPredicate(Long userId, CriteriaBuilder criteriaBuilder, Root<ForumTopic> root) {
+    private Predicate prepareTopicBeforePredicate(Long days, CriteriaBuilder criteriaBuilder, Root<ForumTopic> root) {
+        return criteriaBuilder.greaterThan(root.get("createdDateTime"), ZonedDateTime.now().minusDays(days));
+    }
+
+    private Predicate prepareUserNotEqualPredicate(Long userId, CriteriaBuilder criteriaBuilder, Root<ForumTopic> root) {
         Join<ForumTopic, SentTopic> joinTopic = root.join("sentTopic", JoinType.LEFT);
         Join<SentTopic, ApplicationUser> joinUser = joinTopic.join("applicationUser", JoinType.LEFT);
         return criteriaBuilder.or(criteriaBuilder.notEqual(joinUser.get("id"), userId), criteriaBuilder.isNull(joinUser.get("id")));
     }
 
-    private Predicate prepareOrLikeTitlePredicate(Set<String> requestsPermutations, CriteriaBuilder criteriaBuilder, Root<ForumTopic> root) {
-        Predicate[] likePredicates = requestsPermutations.stream()
-                .map(request -> criteriaBuilder.like(root.get("title"),
-                        ZERO_OR_MORE_LIKE + request.replaceAll(SPACE_CHAR, SINGLE_SQL_LIKE) + ZERO_OR_MORE_LIKE))
+    private Predicate[] prepareTitleRegexpPredicates(Set<String> requestsPermutations, CriteriaBuilder criteriaBuilder, Root<ForumTopic> root) {
+        return requestsPermutations.stream()
+                .map(request ->
+                        criteriaBuilder.isTrue(criteriaBuilder.function("regexp", Boolean.class, root.get("title"), criteriaBuilder.literal(getRegexPattern(request)))))
                 .toArray(Predicate[]::new);
-        return criteriaBuilder.or(likePredicates);
+    }
+
+    private String getRegexPattern(String request) {
+        return Pattern.compile(ZERO_OR_MORE_REGEX + request.replaceAll(SPACE_CHAR, ZERO_OR_ONE_REGEX) + ZERO_OR_MORE_REGEX).pattern();
     }
 
     @Override

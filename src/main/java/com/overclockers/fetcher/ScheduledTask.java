@@ -21,7 +21,6 @@ public class ScheduledTask {
     private MailService mailService;
 
     @Scheduled(cron = "${processing.cron}")
-//    @Scheduled(fixedRate = 300000)
     public void processTopics() {
         log.info("Scheduled topics processing");
         overclockersFetchingService.fetchAndSaveTopics();
