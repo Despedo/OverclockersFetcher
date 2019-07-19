@@ -1,6 +1,7 @@
 package com.overclockers.fetcher.configuration;
 
 import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +40,14 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Resource
     private Environment env;
+
+    @Bean
+    public PropertyPlaceholderConfigurer placeholderConfigurer(){
+        PropertyPlaceholderConfigurer placeholderConfigurer = new PropertyPlaceholderConfigurer();
+        placeholderConfigurer.setSystemPropertiesModeName("SYSTEM_PROPERTIES_MODE_OVERRIDE");
+        placeholderConfigurer.setSearchSystemEnvironment(true);
+        return placeholderConfigurer;
+    }
 
     @Bean(name = "threadPoolTaskExecutor")
     public Executor threadPoolTaskExecutor() {
