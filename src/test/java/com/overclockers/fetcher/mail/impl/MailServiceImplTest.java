@@ -19,7 +19,6 @@ import org.simplejavamail.mailer.Mailer;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import javax.mail.Session;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -122,6 +121,7 @@ class MailServiceImplTest {
         String appUrl = "localhost";
         String href = appUrl + "/confirm?token=" + user.getConfirmationToken();
         when(render.renderHtmlTextForRegistrationConfirmation(href)).thenReturn("<html>Some rendered Html</html>");
+        ReflectionTestUtils.setField(mailService, "senderAddress", "test@mail.com");
 
         mailService.processRegistrationEmail(user, appUrl);
 

@@ -5,7 +5,6 @@ import com.overclockers.fetcher.entity.ApplicationUser;
 import com.overclockers.fetcher.mail.MailService;
 import com.overclockers.fetcher.service.ApplicationUserService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestAppConfiguration.class)
 @WebAppConfiguration
-@Disabled
 class RegisterControllerTest {
 
     private static final String FIRST_NAME_FILED = "firstName";

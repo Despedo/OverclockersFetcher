@@ -79,7 +79,7 @@ public class MailServiceImpl implements MailService {
         String htmlText = render.renderHtmlTextForRegistrationConfirmation(appUrl + "/confirm?token=" + user.getConfirmationToken());
 
         Email email = EmailBuilder.startingBlank()
-                .from(SENDER_NAME)
+                .from(SENDER_NAME, senderAddress)
                 .to(user.getEmail())
                 .withSubject(REGISTRATION_EMAIL_SUBJECT)
                 .withHTMLText(htmlText)

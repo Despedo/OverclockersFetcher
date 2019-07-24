@@ -2,7 +2,6 @@ package com.overclockers.fetcher;
 
 import com.overclockers.fetcher.configuration.TestAppConfiguration;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = TestAppConfiguration.class)
 @WebAppConfiguration
-@Disabled
 public class LoginLogoutTest {
     private static final String TEST_USER_EMAIL = "Alex.W@gmail.com";
     private static final String TEST_USER_PASS = "The55rongPa55";

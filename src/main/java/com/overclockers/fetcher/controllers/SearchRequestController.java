@@ -30,10 +30,6 @@ public class SearchRequestController {
     @Value("${no.requests.message}")
     private String noRequestsMessage;
 
-    @Value("${simplejavamail.smtp.password}")
-    private String pass;
-
-
     @NonNull
     private SearchRequestConverter requestConverter;
     @NonNull
