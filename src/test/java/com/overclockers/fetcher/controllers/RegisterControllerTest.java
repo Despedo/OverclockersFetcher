@@ -153,7 +153,7 @@ class RegisterControllerTest {
                 .andExpect(model().attributeHasNoErrors(USER_ATTRIBUTE));
 
         verify(applicationUserService).findUserByEmail(email);
-        verify(applicationUserService).registerUser(email, firstName, lastName, "http://localhost:80");
+        verify(applicationUserService).registerUser(email, firstName, lastName, "http://localhost");
     }
 
     @Sql(value = "classpath:sql/createApplicationUsers.sql", executionPhase = BEFORE_TEST_METHOD)

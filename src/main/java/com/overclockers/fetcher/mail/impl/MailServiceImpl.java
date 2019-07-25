@@ -32,7 +32,7 @@ public class MailServiceImpl implements MailService {
 
     private static final String SEARCH_REQUEST_EMAIL_SUBJECT = "Topics according to your request";
     private static final String REGISTRATION_EMAIL_SUBJECT = "Registration Confirmation";
-    private static final String SENDER_NAME = "Overclockers FS";
+    private static final String SENDER_NAME = "Oversearch";
 
     @Value("${simplejavamail.smtp.username}")
     private String senderAddress;

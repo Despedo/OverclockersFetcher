@@ -18,14 +18,14 @@ import static j2html.TagCreator.*;
 @Service
 public class HtmlRenderImpl implements HtmlRender {
 
-    private static final String IMG_URL = "https://imgur.com/RUa4aSe.png";
+    private static final String LOGO_IMG_URL = "http://oversearch.ddns.net/images/logo.png";
 
     @Override
     public String renderHtmlTextForSearchRequestEmail(Map<SearchRequest, List<ForumTopic>> topicsMap) {
         return html(
                 body(
                         hr(),
-                        img().withSrc(IMG_URL),
+                        img().withSrc(LOGO_IMG_URL),
                         hr(),
                         generateTopicsContent(topicsMap)
                 )
@@ -37,7 +37,7 @@ public class HtmlRenderImpl implements HtmlRender {
         return html(
                 body(
                         hr(),
-                        img().withSrc(IMG_URL),
+                        img().withSrc(LOGO_IMG_URL),
                         hr(),
                         text("To confirm your e-mail address, please click "),
                         a().withText("the link").withHref(href)

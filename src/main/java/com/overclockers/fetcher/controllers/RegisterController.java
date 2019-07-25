@@ -78,7 +78,7 @@ public class RegisterController {
                 modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, userRegisteredMessage);
                 bindingResult.reject("email");
             } else {
-                String appUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+                String appUrl = request.getScheme() + "://" + request.getServerName();
                 ApplicationUser applicationUser = userService.registerUser(user.getEmail(), user.getFirstName(), user.getLastName(), appUrl);
                 modelAndView.addObject(USER_ATTRIBUTE, user);
                 modelAndView.addObject(CONFIRMATION_MESSAGE_ATTRIBUTE, emailSentMessage + applicationUser.getEmail());
