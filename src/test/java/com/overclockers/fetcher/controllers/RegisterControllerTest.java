@@ -130,7 +130,7 @@ class RegisterControllerTest {
 
         verify(applicationUserService).findUserByEmail(email);
         verify(applicationUserService, never()).saveUser(any(ApplicationUser.class));
-        verify(mailService, never()).processRegistrationEmail(any(ApplicationUser.class), eq("http://localhost:80"));
+        verify(mailService, never()).processRegistrationEmail(any(ApplicationUser.class), eq("http://localhost"));
     }
 
     @Test

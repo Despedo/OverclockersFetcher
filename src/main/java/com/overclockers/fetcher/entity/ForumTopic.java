@@ -37,9 +37,7 @@ public class ForumTopic {
     private SentTopic sentTopic;
 
     /*
-    Custom equals and hash code were implemented for current work with collections
-    to indicate updated topics. @EqualsAndHashCode from lombock doesnt properly work
-    with ZonedDateTime.
+    Custom equals and hash code were implemented to indicate updated on forum topics.
      */
     public boolean equals(final Object o) {
         if (o == this) return true;

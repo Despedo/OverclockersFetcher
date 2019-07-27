@@ -125,7 +125,7 @@ class ForumTopicServiceImplTest {
 
         forumTopicService.registerSentTopics(forumTopics, applicationUser);
 
-        verify(sentTopicRepository, times(1)).saveAll(anyList());
+        verify(sentTopicRepository, times(1)).saveAll(anySet());
     }
 
     @Test
