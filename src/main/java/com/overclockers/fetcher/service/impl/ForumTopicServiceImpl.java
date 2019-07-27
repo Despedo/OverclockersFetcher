@@ -95,14 +95,13 @@ public class ForumTopicServiceImpl implements ForumTopicService {
     @Override
     public void registerSentTopics(Collection<ForumTopic> forumTopics, ApplicationUser applicationUser) {
         if (!forumTopics.isEmpty()) {
-            List<SentTopic> sentTopics = forumTopics.stream().map
+            Set<SentTopic> sentTopics = forumTopics.stream().map
                     (topic -> SentTopic.builder()
                             .applicationUser(applicationUser)
                             .forumTopic(topic)
                             .createdDatetime(getCurrentTime())
                             .build()
-                    ).collect(Collectors.toList());
-
+                    ).collect(Collectors.toSet());
             sentTopicRepository.saveAll(sentTopics);
         }
     }
