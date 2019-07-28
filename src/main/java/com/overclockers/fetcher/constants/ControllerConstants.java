@@ -9,6 +9,7 @@ public class ControllerConstants {
     public static final String LOGIN_VIEW = "login";
     public static final String CONFIRM_VIEW = "confirm";
     public static final String REQUEST_VIEW = "request";
+    public static final String ERROR_VIEW = "error";
     public static final String REDIRECT = "redirect:/";
     public static final String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
 
