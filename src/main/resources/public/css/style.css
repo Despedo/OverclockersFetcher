@@ -4470,6 +4470,12 @@ body.mini-navbar.fixed-sidebar .logo-element {
   margin-right: 0px;
 }
 /* ERROR & LOGIN & LOCKSCREEN*/
+
+.errorscreen {
+  color:#FF7659;
+  font-size: 25px;
+}
+
 .middle-box {
   max-width: 400px;
   z-index: 100;
