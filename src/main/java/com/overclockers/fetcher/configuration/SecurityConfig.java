@@ -20,14 +20,12 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableGlobalMethodSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private ApplicationUserDetailsService detailsService;
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/confirm").permitAll()
+                .antMatchers("/test").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
@@ -43,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web
                 .httpFirewall(allowUrlEncodedSlashHttpFirewall())
                 .ignoring()
@@ -65,7 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    public void configureGlobal(AuthenticationManagerBuilder auth, ApplicationUserDetailsService detailsService) throws Exception {
         auth.userDetailsService(detailsService).passwordEncoder(getEncoder());
     }
 }

@@ -148,7 +148,7 @@ class RegisterControllerTest {
                 )))
                 .andExpect(status().isOk())
                 .andExpect(view().name(REGISTER_VIEW))
-                .andExpect(model().attribute(CONFIRMATION_MESSAGE_ATTRIBUTE, "A confirmation e-mail has been sent to " + email))
+                .andExpect(model().attribute(CONFIRMATION_MESSAGE_ATTRIBUTE, "The confirmation e-mail has been sent to " + email))
                 .andExpect(model().attributeExists(USER_ATTRIBUTE))
                 .andExpect(model().attributeHasNoErrors(USER_ATTRIBUTE));
 

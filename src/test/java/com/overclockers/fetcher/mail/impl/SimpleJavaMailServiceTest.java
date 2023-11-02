@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(SpringExtension.class)
-class MailServiceImplTest {
+class SimpleJavaMailServiceTest {
 
 
     @Mock
@@ -45,12 +45,17 @@ class MailServiceImplTest {
 
     @BeforeEach
     void init() {
-        mailService = new MailServiceImpl(render, topicService, mailer, requestService);
+        mailService = SimpleJavaMailService.builder()
+                .mailer(mailer)
+                .render(render)
+                .topicService(topicService)
+                .requestService(requestService)
+                .build();
     }
 
     @Test
     void processUserRequestEmailWithoutRequestsTest() {
-        TestAppender testAppender = createAppender(MailServiceImpl.class);
+        TestAppender testAppender = createAppender(SimpleJavaMailService.class);
         ApplicationUser user = getDummyApplicationUser();
         List<SearchRequest> searchRequests = Collections.emptyList();
         when(requestService.findSearchRequestsByUserId(anyLong())).thenReturn(searchRequests);
@@ -65,7 +70,7 @@ class MailServiceImplTest {
 
     @Test
     void processUserRequestEmailWithRequestedTopicsTest() {
-        TestAppender testAppender = createAppender(MailServiceImpl.class);
+        TestAppender testAppender = createAppender(SimpleJavaMailService.class);
         String request = "1080Ti";
         ApplicationUser user = getDummyApplicationUser();
         List<SearchRequest> searchRequests = getDummySearchRequest(user, request);
@@ -85,13 +90,10 @@ class MailServiceImplTest {
         verify(render).renderHtmlTextForSearchRequestEmail(topicsMap);
         verify(mailer).sendMail(any(Email.class));
         verify(topicService).registerSentTopics(topics, user);
-        assertEquals(2, testAppender.getLogEvents().size());
+        assertEquals(1, testAppender.getLogEvents().size());
         assertEquals(Level.INFO, testAppender.getLogEvents().get(0).getLevel());
-        assertEquals("Found '2' topics by requests '[" + request + "]' for user '" + user.getEmail() + "'.",
+        assertEquals("Email sent to '" + user.getEmail() + "'.",
                 testAppender.getLogEvents().get(0).getMessage().getFormattedMessage());
-        assertEquals(Level.INFO, testAppender.getLogEvents().get(1).getLevel());
-        assertEquals("Sending email to '" + user.getEmail() + "'.",
-                testAppender.getLogEvents().get(1).getMessage().getFormattedMessage());
 
     }
 
@@ -116,7 +118,7 @@ class MailServiceImplTest {
 
     @Test
     void processRegistrationEmailTest() {
-        TestAppender testAppender = createAppender(MailServiceImpl.class);
+        TestAppender testAppender = createAppender(SimpleJavaMailService.class);
         ApplicationUser user = getDummyApplicationUser();
         String appUrl = "localhost";
         String href = appUrl + "/confirm?token=" + user.getConfirmationToken();
@@ -129,7 +131,7 @@ class MailServiceImplTest {
         verify(mailer).sendMail(any(Email.class));
         assertEquals(1, testAppender.getLogEvents().size());
         assertEquals(Level.INFO, testAppender.getLogEvents().get(0).getLevel());
-        assertEquals("Sending registration email to '" + user.getEmail() + "'",
+        assertEquals("Registration email sent to '" + user.getEmail() + "'",
                 testAppender.getLogEvents().get(0).getMessage().getFormattedMessage());
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SearchRequestServiceImpl implements SearchRequestService {
 
-    private SearchRequestRepository repository;
+    private final SearchRequestRepository repository;
 
     @Override
     public List<SearchRequest> findSearchRequestsByUserId(Long userId) {

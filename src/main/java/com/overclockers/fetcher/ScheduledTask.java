@@ -16,9 +16,9 @@ import java.util.List;
 @AllArgsConstructor
 public class ScheduledTask {
 
-    private OverclockersFetchingService overclockersFetchingService;
-    private ApplicationUserService applicationUserService;
-    private MailService mailService;
+    private final OverclockersFetchingService overclockersFetchingService;
+    private final ApplicationUserService applicationUserService;
+    private final MailService mailService;
 
     @Scheduled(cron = "${processing.cron}")
     public void processTopics() {
@@ -26,7 +26,7 @@ public class ScheduledTask {
         overclockersFetchingService.fetchAndSaveTopics();
 
         List<ApplicationUser> applicationUsers = applicationUserService.findAllEnabledUsers();
-        applicationUsers.forEach(user -> mailService.processUserRequestEmail(user));
+        applicationUsers.forEach(mailService::processUserRequestEmail);
 
     }
 
