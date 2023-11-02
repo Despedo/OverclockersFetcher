@@ -6,4 +6,6 @@ public interface MailService {
     void processUserRequestEmail(ApplicationUser user);
 
     void processRegistrationEmail(ApplicationUser user, String appUrl);
+
+    void sendTestEmail();
 }

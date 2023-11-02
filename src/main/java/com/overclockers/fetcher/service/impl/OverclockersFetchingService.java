@@ -3,7 +3,6 @@ package com.overclockers.fetcher.service.impl;
 import com.overclockers.fetcher.parser.OverclockersParser;
 import com.overclockers.fetcher.service.FetchingService;
 import com.overclockers.fetcher.service.ForumTopicService;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -16,10 +15,8 @@ import static com.overclockers.fetcher.constants.OverclockersConstants.HOST_URL;
 @RequiredArgsConstructor
 public class OverclockersFetchingService implements FetchingService {
 
-    @NonNull
-    private OverclockersParser parser;
-    @NonNull
-    private ForumTopicService topicService;
+    private final OverclockersParser parser;
+    private final ForumTopicService topicService;
 
     private boolean isColdStart = true;
 

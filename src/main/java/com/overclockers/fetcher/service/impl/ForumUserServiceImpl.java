@@ -15,7 +15,7 @@ import static com.overclockers.fetcher.utils.DateTimeUtil.getCurrentTime;
 @AllArgsConstructor
 public class ForumUserServiceImpl implements ForumUserService {
 
-    private ForumUserRepository repository;
+    private final ForumUserRepository repository;
 
     @Override
     public ForumUser saveUser(ForumUser user) {

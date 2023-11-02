@@ -16,8 +16,8 @@ import static com.overclockers.fetcher.utils.DateTimeUtil.getCurrentTime;
 @AllArgsConstructor
 public class ApplicationUserServiceImpl implements ApplicationUserService {
 
-    private ApplicationUserRepository repository;
-    private MailService mailService;
+    private final ApplicationUserRepository repository;
+    private final MailService mailService;
 
     @Override
     public ApplicationUser findUserById(Long userId) {
